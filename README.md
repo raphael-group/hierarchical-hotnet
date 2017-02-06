@@ -1,7 +1,7 @@
 Hierarchical HotNet
 =======================
 
-Hierarchical HotNet is an algorithm for finding significantly altered subnetworks.  While originally developed for use with cancer mutation data on protein-protein interaction networks, Hierarchical HotNet supports any application in which scores may be associated with the nodes of a network, i.e., a vertex-weighted graph.
+Hierarchical HotNet is an algorithm for finding significantly altered subnetworks from a hierarchy of subnetworks.  While originally developed for use with cancer mutation data on protein-protein interaction networks, Hierarchical HotNet supports any application in which scores may be associated with the nodes of a network, i.e., a vertex-weighted graph.
 
 **The code for Hierarchical HotNet is currently being cleaned-up, and we plan to add it by Tuesday, February 14, 2017.  For now, please see the example in the `examples` directly, which illustrates the full Hierarchical HotNet pipeline on a small example.**
 
@@ -50,7 +50,7 @@ Run the following code to test Hierarchical HotNet on an example network with tw
 
 Alternatively, run the following code to test Hierarchical HotNet in parallel on an example network with two sets of example scores:
 
-        sh examples/example_commands_parallel.sh
+    sh examples/example_commands_parallel.sh
 
 This script requires approximately one or two minutes to finish on a modern laptop or desktop.  It illustrates the full pipeline for Hierarchical HotNet on a small example.  If this script completes successfully, then Hierarchical HotNet is ready to run.
 
@@ -81,17 +81,17 @@ This file associates each gene with a score:
 ### Running
 Hierarchical HotNet has the following steps:
 
-1. Choose the restart parameter `beta` for each network by running `src\choose_beta.py`.
+1. Choose the restart parameter `beta` for each network by running `src/choose_beta.py`.
 
-2. Create a similarity matrix for each network by running `src\create_similarity_matrix.py`.
+2. Create a similarity matrix for each network by running `src/create_similarity_matrix.py`.
 
-3. Depending on your choice of null graph model, generate either permuted scores for each set of scores and network by running `src\permute_scores.py` or permuted networks for each network by running `src\permute_networks.py`.  In general, it is faster to generate permuted scores than permuted networks, which also require additional similarity matrices.
+3. Depending on your choice of null graph model, generate either permuted scores for each set of scores and network by running `src/permute_scores.py` or permuted networks for each network by running `src/permute_networks.py`.  In general, it is faster to generate permuted scores than permuted networks, which also require additional similarity matrices.
 
-4. Construct hierarchies on the observed network and gene scores as well as the permuted networks and gene scores by running `src\construct_hierarchies.py`.
+4. Construct hierarchies on the observed network and gene scores as well as the permuted networks and gene scores by running `src/construct_hierarchies.py`.
 
-5. Find statistically significant heights in the hierarchy by running `src\plot_hierarchy_statistic.py` and a statistically significant, high-effect cut of the hierarchy by running `src\cut_hierarchy.py`.
+5. Find statistically significant heights in the hierarchy by running `src/plot_hierarchy_statistic.py` and a statistically significant, high-effect cut of the hierarchy by running `src/cut_hierarchy.py`.
 
-6. Perform the consensus summarization procedure on the results by running `src\perform_consensus.py`.
+6. Perform the consensus summarization procedure on the results by running `src/perform_consensus.py`.
 
 See `examples/example_commands.sh` or `examples/example_commands_parallel.sh` for a full minimal working example of Hierarchical HotNet that illustrates the use of each of these scripts.
 
