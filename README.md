@@ -80,6 +80,7 @@ This file associates each gene with a score:
 
 ### Running
 Hierarchical HotNet has the following steps:
+
 1. Choose the restart parameter `beta` for each network by running `src\choose_beta.py`.
 
 2. Create a similarity matrix for each network by running `src\create_similarity_matrix.py`.
