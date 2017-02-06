@@ -81,10 +81,15 @@ This file associates each gene with a score:
 ### Running
 Hierarchical HotNet has the following steps:
 1. Choose the restart parameter `beta` for each network by running `src\choose_beta.py`.
+
 2. Create a similarity matrix for each network by running `src\create_similarity_matrix.py`.
+
 3. Depending on your choice of null graph model, generate either permuted scores for each set of scores and network by running `src\permute_scores.py` or permuted networks for each network by running `src\permute_networks.py`.  In general, it is faster to generate permuted scores than permuted networks, which also require additional similarity matrices.
+
 4. Construct hierarchies on the observed network and gene scores as well as the permuted networks and gene scores by running `src\construct_hierarchies.py`.
+
 5. Find statistically significant heights in the hierarchy by running `src\plot_hierarchy_statistic.py` and a statistically significant, high-effect cut of the hierarchy by running `src\cut_hierarchy.py`.
+
 6. Perform the consensus summarization procedure on the results by running `src\perform_consensus.py`.
 
 See `examples/example_commands.sh` or `examples/example_commands_parallel.sh` for a full minimal working example of Hierarchical HotNet that illustrates the use of each of these scripts.
