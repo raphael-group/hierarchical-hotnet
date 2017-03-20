@@ -5,9 +5,9 @@ results=$PWD/results
 
 num_permutations=100
 
-# Compile Fortran routines.
+# Compile Fortran module.
 cd ../src
-f2py -c fortran_routines.f95 -m fortran_routines > /dev/null
+f2py -c fortran_module.f95 -m fortran_module > /dev/null
 cd ../examples
 
 ################################################################################
@@ -111,8 +111,8 @@ do
             -smf  $data/networks/$network/similarity_matrix.h5 \
             -igf  $data/networks/$network/index_gene.tsv \
             -gsf  $data/scores/$score/gene_score.tsv \
-            -df   $data/hierarchies/"$network"_"$score"/edge_list.tsv \
-            -digf $data/hierarchies/"$network"_"$score"/index_gene.tsv
+            -helf $data/hierarchies/"$network"_"$score"/edge_list.tsv \
+            -higf $data/hierarchies/"$network"_"$score"/index_gene.tsv
 
         for i in `seq $num_permutations`
         do
@@ -120,8 +120,8 @@ do
                 -smf  $data/networks/$network/similarity_matrix.h5 \
                 -igf  $data/networks/$network/index_gene.tsv \
                 -gsf  $data/scores/$score/permuted/$network/gene_score_$i.tsv \
-                -df   $data/hierarchies/"$network"_"$score"/permuted/edge_list_$i.tsv \
-                -digf $data/hierarchies/"$network"_"$score"/permuted/index_gene_$i.tsv
+                -helf $data/hierarchies/"$network"_"$score"/permuted/edge_list_$i.tsv \
+                -higf $data/hierarchies/"$network"_"$score"/permuted/index_gene_$i.tsv
         done
     done
 done
@@ -140,9 +140,9 @@ do
     for score in score_1 score_2
     do
         python plot_hierarchy_statistic.py \
-            -odf  $data/hierarchies/"$network"_"$score"/edge_list.tsv \
+            -oelf $data/hierarchies/"$network"_"$score"/edge_list.tsv \
             -oigf $data/hierarchies/"$network"_"$score"/index_gene.tsv \
-            -pdf  $(for i in `seq $num_permutations`; do echo -n "$data/hierarchies/"$network"_"$score"/permuted/edge_list_$i.tsv "; done) \
+            -pelf $(for i in `seq $num_permutations`; do echo -n "$data/hierarchies/"$network"_"$score"/permuted/edge_list_$i.tsv "; done) \
             -pigf $(for i in `seq $num_permutations`; do echo -n "$data/hierarchies/"$network"_"$score"/permuted/index_gene_$i.tsv "; done) \
             -nc   1 \
             -l    $network $score \
@@ -158,9 +158,9 @@ do
     for score in score_1 score_2
     do
         python cut_hierarchy.py \
-            -odf  $data/hierarchies/"$network"_"$score"/edge_list.tsv \
+            -oelf $data/hierarchies/"$network"_"$score"/edge_list.tsv \
             -oigf $data/hierarchies/"$network"_"$score"/index_gene.tsv \
-            -pdf  $(for i in `seq $num_permutations`; do echo -n "$data/hierarchies/"$network"_"$score"/permuted/edge_list_$i.tsv "; done) \
+            -pelf $(for i in `seq $num_permutations`; do echo -n "$data/hierarchies/"$network"_"$score"/permuted/edge_list_$i.tsv "; done) \
             -pigf $(for i in `seq $num_permutations`; do echo -n "$data/hierarchies/"$network"_"$score"/permuted/index_gene_$i.tsv "; done) \
             -nc   1 \
             -o    $results/clusters_"$network"_"$score".tsv
