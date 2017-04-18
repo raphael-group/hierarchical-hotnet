@@ -128,15 +128,15 @@ def convert_weighted_edge_list(edge_list, dictionary):
 
 ####################################################################################################################################
 #
-# Statistics functions
+# Statistical functions
 #
 ####################################################################################################################################
 
 def multiple_hypothesis_correction(p_values_, method='BH'):
     """
     Compute a multiple-hypothesis correction using one of multiple
-    methods: Bonferroni (bonferroni), Holm-Bonferroni (holm),
-    Benjamini-Hochberg (BH), or Benjamini-Hochberg-Yekutieli (BY).
+    methods: Bonferroni (bonferroni), Benjamini-Hochberg (BH), or
+    Benjamini-Hochberg-Yekutieli (BY).
 
     Example (from Benjamini and Hochberg (1995)):
     In [1]: p_values = [0.0201, 0.7590, 0.0344, 0.0278, 0.0095,
@@ -148,7 +148,7 @@ def multiple_hypothesis_correction(p_values_, method='BH'):
                     0.06385714,  0.77526923,  1.        ,  0.0015    ,  0.58118182,
                     0.003     ,  0.77526923,  0.486     ,  0.0765    ,  0.0095    ])
     """
-    if method not in ['bonferroni', 'holm', 'BH', 'BY']:
+    if method not in ['bonferroni', 'BH', 'BY']:
         raise NotImplementedError('{} method not implemented'.format(method))
 
     valid_indices = [i for i, p_value in enumerate(p_values_) if 0.0<=p_value<=1.0]
@@ -159,18 +159,6 @@ def multiple_hypothesis_correction(p_values_, method='BH'):
 
     if method=='bonferroni':
         q_values = np.minimum(n*p_values, 1)
-
-    elif method=='holm':
-        sorted_indices = np.argsort(p_values)
-        sorted_p_values = p_values[sorted_indices]
-
-        sorted_q_values = np.zeros(n)
-        sorted_q_values[0] = min(sorted_p_values[0], 1.0)
-        for i in range(1, n-1):
-            sorted_q_values[i] = min(max(float(n-i)*sorted_p_values[i], sorted_q_values[i-1]), 1.0)
-
-        q_values = np.zeros(n)
-        q_values[sorted_indices] = sorted_q_values
 
     elif method=='BH':
         sorted_indices = np.argsort(p_values)
@@ -190,9 +178,9 @@ def multiple_hypothesis_correction(p_values_, method='BH'):
 
         c = np.sum(1.0/np.arange(1, n+1, dtype=np.float64))
         sorted_q_values = np.zeros(n)
-        sorted_q_values[n-1] = min(sorted_p_values[m-1], 1.0)
+        sorted_q_values[n-1] = min(c*sorted_p_values[n-1], 1.0)
         for i in reversed(range(n-1)):
-            sorted_q_values[i] = min(float(n)/float(i+1)*sorted_p_values[i], sorted_q_values[i+1])
+            sorted_q_values[i] = min(c*(float(n)/float(i+1))*sorted_p_values[i], sorted_q_values[i+1])
 
         q_values = np.zeros(n)
         q_values[sorted_indices] = sorted_q_values
