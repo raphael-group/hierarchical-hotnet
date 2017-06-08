@@ -16,7 +16,8 @@ def get_parser():
     parser.add_argument('-smn', '--similarity_matrix_name', type=str, required=False, default='PPR', help='HH similarity matrix name')
     parser.add_argument('-igf', '--index_gene_file', type=str, required=True, help='Index-gene filename')
     parser.add_argument('-gsf', '--gene_score_file', type=str, required=True, help='Gene-score filename')
-    parser.add_argument('-st', '--score_threshold', type=float, required=False, default=0.0, help='Score threshold')
+    parser.add_argument('-lt', '--log_transform', action='store_true', help='Log transform scores')
+    parser.add_argument('-st', '--score_threshold', type=float, required=False, default=float('nan'), help='Score threshold')
     parser.add_argument('-helf', '--hierarchy_edge_list_file', type=str, required=True, help='Hierarchy edge list filename')
     parser.add_argument('-higf', '--hierarchy_index_gene_file', type=str, required=True, help='Hierarchy index-gene filename')
     parser.add_argument('-v', '--verbose', action='store_true', help='Verbose')
@@ -28,9 +29,18 @@ def run(args):
     if args.verbose:
         print('Loading data...')
 
-    P = load_matrix(args.similarity_matrix_file, args.similarity_matrix_name)
     index_to_gene, gene_to_index = load_index_gene(args.index_gene_file)
-    gene_to_score = load_gene_score(args.gene_score_file, args.score_threshold)
+    P = load_matrix(args.similarity_matrix_file, args.similarity_matrix_name)
+    gene_to_score = load_gene_score(args.gene_score_file)
+
+    if not math.isnan(args.score_threshold):
+        if args.log_transform:
+            gene_to_score = dict((gene, score) for gene, score in gene_to_score.items() if score<=args.score_threshold)
+        else:
+            gene_to_score = dict((gene, score) for gene, score in gene_to_score.items() if score>=args.score_threshold)
+
+    if args.log_transform:
+        gene_to_score = dict((gene, -math.log10(score) if score!=1.0 else 0.0) for gene, score in gene_to_score.items())
 
     # Process data.
     if args.verbose:
