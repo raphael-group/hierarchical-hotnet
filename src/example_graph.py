@@ -45,7 +45,7 @@ def run(args):
         edge_list += [(letters[i], letters[i+1])]
         edge_list += [(letters[i], letters[i+2])]
     score_list_a += [10]*8
-    score_list_b += [0.4, 0.4, 0.5, 0.6, 0.6, 0.6, 0.5, 0.4]
+    score_list_b += [0.7, 0.4, 0.5, 0.6, 0.6, 0.6, 0.5, 0.4]
     for i in range(8):
         pos[letters[i]] = (math.cos(2*math.pi*i/8)+2, math.sin(2*math.pi*i/8))
 

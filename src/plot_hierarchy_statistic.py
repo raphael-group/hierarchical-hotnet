@@ -137,7 +137,7 @@ def run(args):
     observed_color = (0.8, 0.0, 0.0)
     permuted_color = (0.0, 0.0, 0.8)
     background_permuted_color = (0.5, 0.5, 0.8)
-    alpha = max(1.0/float(num_permutations), 0.01)
+    alpha = max(1.0/float(num_permutations), 0.1)
 
     plt.step(inverse_observed_heights, observed_statistics, c=observed_color, linewidth=1, zorder=5, label='Observed')
     plt.step(inverse_permuted_heights, permuted_statistics_min, c=permuted_color, linewidth=1, linestyle=':', zorder=3)

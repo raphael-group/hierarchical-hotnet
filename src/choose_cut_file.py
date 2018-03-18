@@ -16,10 +16,10 @@ def get_parser():
     parser = argparse.ArgumentParser(description=description)
     parser.add_argument('-oelf', '--observed_edge_list_file', type=str, required=True, help='Observed hierarchy edge list filename')
     parser.add_argument('-oigf', '--observed_index_gene_file', type=str, required=True, help='Observed hierarchy index-gene filename')
-    parser.add_argument('-pelf', '--permuted_edge_list_files', type=str, required=True, nargs='*', help='Permuted hierarchy edge list filenames')
-    parser.add_argument('-pigf', '--permuted_index_gene_files', type=str, required=True, nargs='*', help='Permuted hierarchy index-gene filenames')
-    parser.add_argument('-lb', '--lower_bound', type=int, required=False, default=20, help='Lower bound')
-    parser.add_argument('-ub', '--upper_bound', type=int, required=False, default=500, help='Upper bound')
+    parser.add_argument('-pelf', '--permuted_edge_list_files', type=str, required=True, help='Permuted hierarchy edge list filenames')
+    parser.add_argument('-pigf', '--permuted_index_gene_files', type=str, required=True, help='Permuted hierarchy index-gene filenames')
+    parser.add_argument('-lb', '--lower_bound', type=int, required=False, default=10, help='Lower bound')
+    parser.add_argument('-ub', '--upper_bound', type=int, required=False, default=10**6, help='Upper bound')
     parser.add_argument('-hf', '--height_file', type=str, required=False, help='Height file')
     parser.add_argument('-sf', '--statistic_file', type=str, required=False, help='Statistic file')
     parser.add_argument('-rf', '--ratio_file', type=str, required=False, help='Ratio file')
@@ -77,8 +77,21 @@ def load_statistics_wrapper(arrs):
 
 # Run script.
 def run(args):
-    permuted_edge_list_files = [x for x in args.permuted_edge_list_files if x!=args.observed_edge_list_file]
-    permuted_index_gene_files = [x for x in args.permuted_index_gene_files if x!=args.observed_index_gene_file]
+    permuted_edge_list_files = list()
+    with open(args.permuted_edge_list_files, 'r') as f:
+        for l in f:
+            arrs = l.lstrip().rstrip().split()
+            for arr in arrs:
+                permuted_edge_list_files.append(arr)
+    permuted_edge_list_files = [x for x in permuted_edge_list_files if x!=args.observed_edge_list_file]
+
+    permuted_index_gene_files = list()
+    with open(args.permuted_index_gene_files, 'r') as f:
+        for l in f:
+            arrs = l.lstrip().rstrip().split()
+            for arr in arrs:
+                permuted_index_gene_files.append(arr)
+    permuted_index_gene_files = [x for x in permuted_index_gene_files if x!=args.observed_index_gene_file]
 
     assert len(permuted_edge_list_files)==len(permuted_index_gene_files)
     num_permutations = len(permuted_edge_list_files)

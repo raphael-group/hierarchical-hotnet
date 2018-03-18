@@ -8,7 +8,7 @@ num_permutations=100
 # Compile Fortran module.
 cd ../src
 f2py -c fortran_module.f95 -m fortran_module > /dev/null
-cd ../examples
+cd ..
 
 ################################################################################
 #
@@ -29,14 +29,12 @@ do
     done
 done
 
-cd ../src
-
 # Choose beta parameter.
 echo "Choosing beta parameter..."
 
 for network in network_1
 do
-    python choose_beta.py \
+    python src/choose_beta.py \
         -i $data/networks/$network/edge_list.tsv \
         -o $data/networks/$network/beta.txt
 done
@@ -48,7 +46,7 @@ for network in network_1
 do
     beta=`cat $data/networks/$network/beta.txt`
 
-    python create_similarity_matrix.py \
+    python src/create_similarity_matrix.py \
         -i $data/networks/$network/edge_list.tsv \
         -b $beta \
         -o $data/networks/$network/similarity_matrix.h5
@@ -64,7 +62,7 @@ do
     # Preserve connectivity of the original graph.
     for i in `seq 1 4`
     do
-        python permute_network.py \
+        python src/permute_network.py \
             -i $data/networks/$network/edge_list.tsv \
             -s $i \
             -c \
@@ -74,7 +72,7 @@ do
     # Do not preserve connectivity of the original graph.
     for i in `seq 1 4`
     do
-        python permute_network.py \
+        python src/permute_network.py \
             -i $data/networks/$network/edge_list.tsv \
             -s $i \
             -o $data/networks/$network/permuted/edge_list_$i.tsv
@@ -91,7 +89,7 @@ do
     do
         for i in `seq $num_permutations`
         do
-            python permute_scores.py \
+            python src/permute_scores.py \
                 -i   $data/scores/$score/gene_score.tsv \
                 -igf $data/networks/$network/index_gene.tsv \
                 -s   $i \
@@ -107,7 +105,7 @@ for network in network_1
 do
     for score in score_1 score_2
     do
-        python construct_hierarchy.py \
+        python src/construct_hierarchy.py \
             -smf  $data/networks/$network/similarity_matrix.h5 \
             -igf  $data/networks/$network/index_gene.tsv \
             -gsf  $data/scores/$score/gene_score.tsv \
@@ -116,7 +114,7 @@ do
 
         for i in `seq $num_permutations`
         do
-            python construct_hierarchy.py \
+            python src/construct_hierarchy.py \
                 -smf  $data/networks/$network/similarity_matrix.h5 \
                 -igf  $data/networks/$network/index_gene.tsv \
                 -gsf  $data/scores/$score/permuted/$network/gene_score_$i.tsv \
@@ -139,7 +137,7 @@ for network in network_1
 do
     for score in score_1 score_2
     do
-        python plot_hierarchy_statistic.py \
+        python src/plot_hierarchy_statistic.py \
             -oelf $data/hierarchies/"$network"_"$score"/edge_list.tsv \
             -oigf $data/hierarchies/"$network"_"$score"/index_gene.tsv \
             -pelf $(for i in `seq $num_permutations`; do echo -n "$data/hierarchies/"$network"_"$score"/permuted/edge_list_$i.tsv "; done) \
@@ -157,21 +155,63 @@ for network in network_1
 do
     for score in score_1 score_2
     do
-        python cut_hierarchy.py \
+
+        echo $(for i in `seq $num_permutations`; do echo " $data/hierarchies/"$network"_"$score"/permuted/edge_list_$i.tsv"; done) > $data/hierarchies/"$network"_"$score"/permuted_edge_list_file.txt
+        echo $(for i in `seq $num_permutations`; do echo " $data/hierarchies/"$network"_"$score"/permuted/index_gene_$i.tsv"; done) > $data/hierarchies/"$network"_"$score"/permuted_index_gene_file.txt
+
+        python src/choose_cut_file.py \
             -oelf $data/hierarchies/"$network"_"$score"/edge_list.tsv \
             -oigf $data/hierarchies/"$network"_"$score"/index_gene.tsv \
-            -pelf $(for i in `seq $num_permutations`; do echo -n "$data/hierarchies/"$network"_"$score"/permuted/edge_list_$i.tsv "; done) \
-            -pigf $(for i in `seq $num_permutations`; do echo -n "$data/hierarchies/"$network"_"$score"/permuted/index_gene_$i.tsv "; done) \
-            -nc   1 \
-            -o    $results/clusters_"$network"_"$score".tsv
+            -pelf $data/hierarchies/"$network"_"$score"/permuted_edge_list_file.txt \
+            -pigf $data/hierarchies/"$network"_"$score"/permuted_index_gene_file.txt \
+            -hf   $data/hierarchies/"$network"_"$score"/height.txt \
+            -sf   $data/hierarchies/"$network"_"$score"/statistic.txt \
+            -rf   $data/hierarchies/"$network"_"$score"/ratio.txt
+
+        for i in `seq $num_permutations`
+        do
+            python src/choose_cut_file.py \
+                -oelf $data/hierarchies/"$network"_"$score"/permuted/edge_list_"$i".tsv \
+                -oigf $data/hierarchies/"$network"_"$score"/permuted/index_gene_"$i".tsv \
+                -pelf $data/hierarchies/"$network"_"$score"/permuted_edge_list_file.txt \
+                -pigf $data/hierarchies/"$network"_"$score"/permuted_index_gene_file.txt \
+                -hf   $data/hierarchies/"$network"_"$score"/permuted/height_"$i".txt \
+                -sf   $data/hierarchies/"$network"_"$score"/permuted/statistic_"$i".txt \
+                -rf   $data/hierarchies/"$network"_"$score"/permuted/ratio_"$i".txt \
+        done
+
+    done
+done
+
+# Summarize results.
+echo "Summarizing results..."
+for network in network_1
+do
+    for score in score_1 score_2
+    do
+
+        height=`cat $data/hierarchies/"$network"_"$score"/height.txt`
+
+        python src/cut_hierarchy.py \
+            -elf $data/hierarchies/"$network"_"$score"/edge_list.tsv \
+            -igf $data/hierarchies/"$network"_"$score"/index_gene.tsv \
+            -cc  height \
+            -ct  $height \
+            -o   $results/"$network"_"$score"_clusters.tsv \
+
+        python src/compute_p_value.py \
+            -osf $data/hierarchies/"$network"_"$score"/ratio.txt \
+            -psf $(for i in `seq $num_permutations`; do echo -n " $data/hierarchies/"$network"_"$score"/permuted/ratio_$i.txt "; done) \
+            -o   $results/"$network"_"$score"_p_value.txt
+
     done
 done
 
 # Perform consensus.
 echo "Performing consensus..."
 
-python perform_consensus.py \
-    -cf  $results/clusters_network_1_score_1.tsv $results/clusters_network_1_score_2.tsv \
+python src/perform_consensus.py \
+    -cf  $results/network_1_score_1_clusters.tsv $results/network_1_score_2_clusters.tsv \
     -igf $data/networks/network_1/index_gene.tsv $data/networks/network_1/index_gene.tsv \
     -elf $data/networks/network_1/edge_list.tsv $data/networks/network_1/edge_list.tsv \
     -n   network_1 network_1 \
