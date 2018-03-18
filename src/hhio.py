@@ -93,11 +93,11 @@ def load_matrix(filename, matrix_name='PPR'):
     '''
     Load matrix.
     '''
-    import h5py
+    import numpy as np, h5py
 
     f = h5py.File(filename, 'r')
     if matrix_name in f:
-        A = f[matrix_name].value
+        A = np.asarray(f[matrix_name].value, dtype=np.float32)
     else:
         raise KeyError('Matrix {} is not in {}.'.format(matrix_name, filename))
     f.close()
@@ -107,12 +107,12 @@ def save_matrix(filename, A, matrix_name='PPR'):
     '''
     Save matrix.
     '''
-    import h5py
+    import numpy as np, h5py
 
     f = h5py.File(filename, 'a')
     if matrix_name in f:
         del f[matrix_name]
-    f[matrix_name] = A
+    f[matrix_name] = np.asarray(A, dtype=np.float32)
     f.close()
 
 ####################################################################################################################################

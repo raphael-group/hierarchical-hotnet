@@ -1,7 +1,6 @@
 #!/usr/bin/python
 
 # Load modules.
-import math, numpy as np
 import sys, argparse
 
 from common import convert_edge_list_to_adjacency_matrix, hh_similarity_matrix

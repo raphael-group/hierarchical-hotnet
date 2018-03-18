@@ -12,7 +12,7 @@ def get_parser():
     parser = argparse.ArgumentParser(description=description)
     parser.add_argument('-i', '--edge_list_file', type=str, required=True, help='Edge list filename')
     parser.add_argument('-c', '--connected', action='store_true', help='Preserve connectivity of graph')
-    parser.add_argument('-s', '--seed', type=tuple, required=False, default=datetime.datetime.now(), help='Random seed')
+    parser.add_argument('-s', '--seed', type=int, required=False, help='Random seed')
     parser.add_argument('-q', '--Q', type=float, required=False, default=100, help='Minimum of Q*|E| edge swaps')
     parser.add_argument('-o', '--permuted_edge_list_file', type=str, required=True, help='Permuted edge list filename')
     return parser
@@ -26,7 +26,8 @@ def run(args):
     G = nx.Graph()
     G.add_edges_from(edge_list)
 
-    random.seed(args.seed)
+    if args.seed is not None:
+        random.seed(args.seed)
     minimum_swaps = int(math.ceil(args.Q*G.number_of_edges()))
 
     if not args.connected:
