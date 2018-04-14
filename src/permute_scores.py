@@ -2,39 +2,50 @@
 
 # Load modules.
 import math, numpy as np
-import sys, argparse, time
+import sys, argparse
 
-from hhio import load_gene_score, load_index_gene, save_gene_score
+from hhio import load_gene_score, save_gene_score
 
 # Parse arguments.
 def get_parser():
     description = 'Permute gene scores.'
     parser = argparse.ArgumentParser(description=description)
     parser.add_argument('-i', '--gene_score_file', type=str, required=True, help='Input filename')
-    parser.add_argument('-igf', '--index_gene_file', type=str, required=False, help='Index-gene filename')
+    parser.add_argument('-bf', '--bin_file', type=str, required=False, help='Bin filename')
     parser.add_argument('-s', '--seed', type=int, required=False, help='Random seed')
     parser.add_argument('-o', '--output_file', type=str, required=True, help='Output filename')
     return parser
 
+def load_bins(filename):
+    bins = list()
+    with open(filename, 'r') as f:
+        for l in f:
+            if not l.startswith('#'):
+                arrs = l.rstrip('\n').split('\t')
+                current_bin = set(arrs)
+                bins.append(current_bin)
+    return bins
+
 # Run script.
 def run(args):
-    # Load edges.
+    # Load unpermuted scores.
     gene_to_score = load_gene_score(args.gene_score_file)
-    score_genes = set(gene_to_score)
-    if args.index_gene_file:
-        index_to_gene, gene_to_index = load_index_gene(args.index_gene_file)
-        network_genes = set(gene_to_index)
+
+    if args.bin_file:
+        bins = load_bins(args.bin_file)
     else:
-        network_genes = score_genes
+        bins = [sorted(gene_to_score)]
 
     # Permute scores.
-    genes = sorted(score_genes)
+    genes = sorted(gene_to_score)
     scores = np.array([gene_to_score[gene] for gene in genes])
 
     if args.seed is not None:
         np.random.seed(args.seed)
-    permute_indices = [i for i, gene in enumerate(genes) if gene in network_genes]   # Only permute scores for genes in network if given.
-    scores[permute_indices] = np.random.permutation(scores[permute_indices])
+
+    for permute_genes in bins:
+        permute_indices = [index for index, gene in enumerate(genes) if gene in permute_genes]
+        scores[permute_indices] = np.random.permutation(scores[permute_indices])
 
     gene_to_score = dict((gene, score) for gene, score in zip(genes, scores))
 

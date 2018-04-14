@@ -7,7 +7,6 @@ from collections import defaultdict
 import multiprocessing as mp
 
 from hierarchical_clustering import find_height_to_sizes, find_cut
-from common import combined_similarity_matrix
 from hhio import load_index_gene, load_weighted_edge_list, progress
 
 # Parse arguments.

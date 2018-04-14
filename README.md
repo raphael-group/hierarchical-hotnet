@@ -1,7 +1,7 @@
 Hierarchical HotNet
 =======================
 
-Hierarchical HotNet is an algorithm for finding significantly altered subnetworks from a hierarchy of subnetworks.  While originally developed for use with cancer mutation data on protein-protein interaction networks, Hierarchical HotNet supports any application in which scores may be associated with the nodes of a network, i.e., a vertex-weighted graph.
+Hierarchical HotNet is an algorithm for finding hierarchy of active subnetworks.  While originally developed for use with cancer mutation data on protein-protein interaction networks, Hierarchical HotNet supports any application in which scores may be associated with the nodes of a network, i.e., a vertex-weighted graph.
 
 Setup
 ------------------------
@@ -27,11 +27,11 @@ This software is either required for Hierarchical HotNet or optional but recomme
 * [NetworkX 1.11](http://networkx.github.io/)
 * [Matplotlib 2.0](http://matplotlib.org/)
 * [virtualenv](https://virtualenv.pypa.io/en/stable/)
-* [gnu parallel](https://www.gnu.org/software/parallel/)
+* [GNU parallel](https://www.gnu.org/software/parallel/)
 
 Most likely, Hierarchical HotNet will work with other versions of the above software.
 
-In particular, both [virtualenv](https://virtualenv.pypa.io/en/stable/) and [gnu parallel](https://www.gnu.org/software/parallel/) are recommended in practice.  Virtualenv provides a virtual environment that allows Python packages to be installed or updated independently of the system packages.  Gnu parallel facilitates running many scripts in parallel.  We highly recommend running Hierarchical HotNet in parallel.
+In particular, both [virtualenv](https://virtualenv.pypa.io/en/stable/) and [GNU parallel](https://www.gnu.org/software/parallel/) are recommended in practice.  Virtualenv provides a virtual environment that allows Python packages to be installed or updated independently of the system packages.  GNU parallel facilitates running many scripts in parallel.  We highly recommend running Hierarchical HotNet in parallel.
 
 ### Compilation
 Install a Fortran compiler, such as [gfortran](https://gcc.gnu.org/wiki/GFortran), for better performance.  The following command compiles the Fortan module used in Hierarchical HotNet:
@@ -79,7 +79,7 @@ This file associates each gene with a score:
     DEF 0.2
 
 ### Running
-We provide a script, `run_hierarchical_hotnet.py`, for running the entire Hierarchical HotNet pipeline.  **This script will be added shortly.**  This script combines the following steps, which can also be run separately:
+We provide a script, `hierarchical_hotnet.py`, for running the entire Hierarchical HotNet pipeline.  **This script will be added shortly.**  This script combines the following steps, which can also be run separately:
 
 1. Choose the restart parameter `beta` for each network by running `src/choose_beta.py` and create a similarity matrix for each network with the chosen `beta` value by running `src/create_similarity_matrix.py`.
 
@@ -87,7 +87,7 @@ We provide a script, `run_hierarchical_hotnet.py`, for running the entire Hierar
 
 3. Construct hierarchies on the observed network and gene scores as well as the permuted networks and gene scores by running `src/construct_hierarchies.py`.
 
-4. Find statistically significant heights in the hierarchy by running `src/plot_hierarchy_statistic.py` and a statistically significant, high-effect-size cut of the hierarchy by running `src/cut_hierarchy.py`.
+4. Find statistically significant heights in the hierarchy by running `src/plot_hierarchy_statistic.py` and a statistically significant, high-effect-size cut of the hierarchy by running `src/cut_hierarchy_file.py`.
 
 5. Perform the consensus summarization procedure on the results by running `src/perform_consensus.py`.
 
@@ -113,4 +113,4 @@ See `LICENSE.txt` for license information.  **Add license.**
 ### Citation
 If you use Hierarchical HotNet in your work, then please cite the following reference:
 
-**Change reference.**
+**Add reference.**
