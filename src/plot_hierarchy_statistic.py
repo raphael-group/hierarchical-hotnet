@@ -139,10 +139,12 @@ def run(args):
     background_permuted_color = (0.5, 0.5, 0.8)
     alpha = max(1.0/float(num_permutations), 0.1)
 
-    plt.step(inverse_observed_heights, observed_statistics, c=observed_color, linewidth=1, zorder=5, label='Observed')
-    plt.step(inverse_permuted_heights, permuted_statistics_min, c=permuted_color, linewidth=1, linestyle=':', zorder=3)
-    plt.step(inverse_permuted_heights, permuted_statistics_mean, c=permuted_color, linewidth=1, zorder=4, label='Permuted')
-    plt.step(inverse_permuted_heights, permuted_statistics_max, c=permuted_color, linewidth=1, linestyle=':', zorder=3)
+    plt.figure(figsize=(5, 5))
+
+    plt.step(inverse_observed_heights, observed_statistics, c=observed_color, linewidth=2, zorder=5, label='Observed')
+    plt.step(inverse_permuted_heights, permuted_statistics_max, c=permuted_color, linewidth=1, linestyle='dashed', zorder=3, label='Permuted (max.)')
+    plt.step(inverse_permuted_heights, permuted_statistics_mean, c=permuted_color, linewidth=2, zorder=4, label='Permuted (mean)')
+    plt.step(inverse_permuted_heights, permuted_statistics_min, c=permuted_color, linewidth=1, linestyle='dotted', zorder=3, label='Permuted (min.)')
 
     for statistics in permuted_statistics_collection:
         plt.step(inverse_permuted_heights, statistics, c=background_permuted_color, linewidth=0.5, alpha=alpha, zorder=1)
@@ -165,13 +167,18 @@ def run(args):
     plt.yscale('log')
 
     plt.xlabel(r'$1/\delta$')
-    plt.ylabel(r'Statistic')
+    plt.ylabel(r'Cluster size')
     if args.label:
-        plt.title(r'Test statistic across $\delta$ thresholds for' + '\n' + r'{}'.format(' '.join(args.label)))
+        plt.title(r'Cluster size across $\delta$ thresholds for' + '\n' + r'{}'.format(' '.join(args.label)))
 
-    legend = plt.legend(loc='upper center', bbox_to_anchor=(0.5, -0.125), ncol=2)
+    ax = plt.gca()
+    ax.set_facecolor('white')
+    plt.setp(ax.spines.values(), color='#555555')
+    plt.grid(color='#555555', linestyle='dotted', alpha=0.25)
+
+    legend = plt.legend(loc='lower right', ncol=1)
     frame = legend.get_frame()
-    frame.set_color('white')
+    frame.set_alpha(0.0)
     plt.tight_layout()
 
     if args.verbose:

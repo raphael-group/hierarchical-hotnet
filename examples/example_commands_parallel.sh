@@ -10,7 +10,7 @@ num_permutations=100
 # https://www.gnu.org/software/parallel/.  You can set the number of cores for
 # your system by changing the following num_cores variable.
 
-num_cores=26
+num_cores=8
 
 # Compile Fortran module.
 cd ../src
@@ -92,12 +92,18 @@ for network in network_1
 do
     for score in score_1 score_2
     do
+        python src/find_permutation_bins.py \
+            -gsf $data/scores/$score/gene_score.tsv \
+            -igf $data/networks/$network/index_gene.tsv \
+            -elf $data/networks/$network/edge_list.tsv \
+            -ms  100 \
+            -o   $data/scores/$score/permuted/$network/gene_score_bin.tsv
+
         parallel -u -j $num_cores --bar \
             python src/permute_scores.py \
-                -i   $data/scores/$score/gene_score.tsv \
-                -igf $data/networks/$network/index_gene.tsv \
-                -s   {} \
-                -o   $data/scores/$score/permuted/$network/gene_score_{}.tsv \
+                -i  $data/scores/$score/gene_score.tsv \
+                -bf $data/scores/$score/permuted/$network/gene_score_bin.tsv \
+                -o  $data/scores/$score/permuted/$network/gene_score_{}.tsv \
             ::: `seq $num_permutations`
     done
 done
@@ -219,4 +225,5 @@ python src/perform_consensus.py \
     -n   network_1 network_1 \
     -s   score_1 score_2 \
     -t   2 \
-    -o   $results/consensus.tsv
+    -o   $results/consensus_nodes.tsv \
+    -oo  $results/consensus_edges.tsv
