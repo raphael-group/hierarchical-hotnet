@@ -18,7 +18,7 @@ This software is either required for Hierarchical HotNet or optional but recomme
 ##### Required
 * Linux/Unix
 * [Python 2.7 or 3.5](http://python.org/)
-* [NumPy 1.12](http://www.numpy.org/)
+* [NumPy 1.14](http://www.numpy.org/)
 * [SciPy 0.19](http://www.scipy.org/)
 * [h5py 2.7](http://www.h5py.org/)
 
@@ -42,13 +42,13 @@ Install a Fortran compiler, such as [gfortran](https://gcc.gnu.org/wiki/GFortran
 We highly recommend using the Fortran module for better performance.  However, Hierarchical HotNet will transparently fall back to a Python-only implementation if a Fortran compiler is unavailable or if compilation is unsuccessful.
 
 ### Testing
-Run the following code to test Hierarchical HotNet on an example network with two sets of example scores:
+To test Hierarchical HotNet on an example network with two sets of example scores, please run the following script:
 
     sh examples/example_commands.sh
 
-This scripts requires approximately one or two minutes to finish on a modern laptop or desktop.  It illustrates the full pipeline for Hierarchical HotNet on a small example.  If this script completes successfully, then Hierarchical HotNet is ready to run.
+This script illustrates the full Hierarchical HotNet pipeline.  It should require less than a minute or two of CPU time, 100 MB of RAM, and 2 MB of storage space.  If this script completes successfully, then Hierarchical HotNet is ready to run.
 
-Alternatively, run the following code to test Hierarchical HotNet in parallel on the same example network with the same two sets of example scores:
+Alternatively, to run Hierarchical HotNet in parallel on the sample example data, please run the following script:
 
     sh examples/example_commands_parallel.sh
 
@@ -83,17 +83,17 @@ We provide a script, `hierarchical_hotnet.py`, for running the entire Hierarchic
 
 1. Choose the restart parameter `beta` for each network by running `src/choose_beta.py` and create a similarity matrix for each network with the chosen `beta` value by running `src/create_similarity_matrix.py`.
 
-2. Depending on your choice of null graph model, generate either permuted scores for each set of scores and network by running `src/permute_scores.py` or permuted networks for each network by running `src/permute_networks.py`.  In general, it is faster to generate permuted scores than permuted networks, which also require additional similarity matrices.
+2. Depending on your choice of null graph model, generate either permuted scores for each set of scores and network by running `src/permute_scores.py` or permuted networks for each network by running `src/permute_networks.py`.  In general, it is faster to generate permuted scores than permuted networks.
 
 3. Construct hierarchies on the observed network and gene scores as well as the permuted networks and gene scores by running `src/construct_hierarchies.py`.
 
-4. Find statistically significant heights in the hierarchy by running `src/plot_hierarchy_statistic.py` and a statistically significant, high-effect-size cut of the hierarchy by running `src/cut_hierarchy_file.py`.
+4. Find cuts of the hierarchy by running `src/cut_hierarchy_file.py`.
 
 5. Perform the consensus summarization procedure on the results by running `src/perform_consensus.py`.
 
-See `examples/example_commands.sh` or `examples/example_commands_parallel.sh` for a full minimal working example of Hierarchical HotNet that illustrates the use of each of these scripts, including the initial inputs and eventual outputs of the Hierarchical HotNet pipeline.
+See `examples/example_commands.sh` or `examples/example_commands_parallel.sh` for full minimal working examples of Hierarchical HotNet that illustrate the use of each of these scripts, including the inputs and outputs for the Hierarchical HotNet pipeline.
 
-The `run_hierarchical_hotnet.py` script checks for intermediate results, which it will use if available.  For example, if the similarity matrices are already available, then the script can skip this step.
+The `hierarchical_hotnet.py` script runs Hierarchical HotNet checks for intermediate results, which it will use if available.  **This script will be added shortly.**  For example, if the similarity matrices are already available, then the script can skip this step of Hierarchical HotNet.
 
 ### Output
 Hierarchical HotNet finds statistically significant regions of a hierarchical clustering of genes.  It also produces a statistically significant, high-effect clustering of the genes.  Hierarchical HotNet provides a consensus procedure that summarizes the results from each network and set of scores.
@@ -105,7 +105,7 @@ Additional information
 See the `examples` directory for example data, scripts, and output for Hierarchical HotNet.
 
 ### Support
-For support with Hierarchical HotNet, please visit the [HotNet Google Group](https://groups.google.com/forum/#!forum/hotnet-users).
+For support with Hierarchical HotNet, please visit the [HotNet Google Group](https://groups.google.com/forum/#!forum/hotnet-users).  To aid troubleshooting, please first try the examples in the `examples` directory and provide any error messages for these examples.
 
 ### License
 See `LICENSE.txt` for license information.  **Add license.**
@@ -113,4 +113,4 @@ See `LICENSE.txt` for license information.  **Add license.**
 ### Citation
 If you use Hierarchical HotNet in your work, then please cite the following reference:
 
-**Add reference.**
+    Reyna, Leiserson, Raphael (2018) Hierarchical HotNet: identifying hierarchies of altered subnetworks. ECCB 2018/*Bioinformatics*.

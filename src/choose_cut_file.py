@@ -7,7 +7,6 @@ from collections import defaultdict
 import multiprocessing as mp
 
 from hierarchical_clustering import find_height_to_sizes, find_cut
-from common import combined_similarity_matrix
 from hhio import load_index_gene, load_weighted_edge_list, progress
 
 # Parse arguments.
@@ -19,7 +18,7 @@ def get_parser():
     parser.add_argument('-pelf', '--permuted_edge_list_files', type=str, required=True, help='Permuted hierarchy edge list filenames')
     parser.add_argument('-pigf', '--permuted_index_gene_files', type=str, required=True, help='Permuted hierarchy index-gene filenames')
     parser.add_argument('-lb', '--lower_bound', type=int, required=False, default=1, help='Lower bound')
-    parser.add_argument('-ub', '--upper_bound', type=int, required=False, default=10**6, help='Upper bound')
+    parser.add_argument('-ub', '--upper_bound', type=int, required=False, default=10**4, help='Upper bound')
     parser.add_argument('-hf', '--height_file', type=str, required=False, help='Height file')
     parser.add_argument('-sf', '--statistic_file', type=str, required=False, help='Statistic file')
     parser.add_argument('-rf', '--ratio_file', type=str, required=False, help='Ratio file')
