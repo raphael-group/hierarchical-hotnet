@@ -45,27 +45,15 @@ done
 #
 ################################################################################
 
-# Choose beta parameter.
-echo "Choosing beta parameters..."
-
-for network in network_1
-do
-    python src/choose_beta.py \
-        -i $data/edge_list_"$network".tsv \
-        -o $intermediate/beta_"$network".txt
-done
-
 # Construct similarity matrix.
 echo "Construct similarity matrices..."
 
 for network in network_1
 do
-    beta=`cat $intermediate/beta_"$network".txt`
-
-    python src/create_similarity_matrix.py \
-        -i $data/edge_list_"$network".tsv \
-        -b $beta \
-        -o $intermediate/similarity_matrix_"$network".h5
+    python src/construct_similarity_matrix.py \
+        -i   $data/edge_list_"$network".tsv \
+        -o   $intermediate/similarity_matrix_"$network".h5 \
+        -bof $intermediate/beta_"$network".txt
 done
 
 ################################################################################

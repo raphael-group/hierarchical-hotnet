@@ -96,12 +96,12 @@ See `examples/example_commands.sh` or `examples/example_commands_parallel.sh` fo
 The `hierarchical_hotnet.py` script runs Hierarchical HotNet checks for intermediate results, which it will use if available.  **This script will be added shortly.**  For example, if the similarity matrices are already available, then the script can skip this step of Hierarchical HotNet.
 
 ### Output
-Hierarchical HotNet finds statistically significant regions of a hierarchical clustering of genes.  It also produces a statistically significant, high-effect clustering of the genes.  Hierarchical HotNet provides a consensus procedure that summarizes the results from each network and set of scores.
+Hierarchical HotNet identifies statistically significant regions of a hierarchical clustering of topologically close, high-scoring genes.  Hierarchical HotNet also performs a consensus across hierarchical clusterings from different networks and gene scores.
 
 Additional information
 ----------------
 
-### Example
+### Examples
 See the `examples` directory for example data, scripts, and output for Hierarchical HotNet.
 
 ### Support
@@ -113,4 +113,4 @@ See `LICENSE.txt` for license information.  **Add license.**
 ### Citation
 If you use Hierarchical HotNet in your work, then please cite the following reference:
 
-    Reyna, Leiserson, Raphael (2018) Hierarchical HotNet: identifying hierarchies of altered subnetworks. ECCB 2018/*Bioinformatics*.
+> M.A. Reyna, M.D.M. Leiserson, B.J. Raphael. Hierarchical HotNet: identifying hierarchies of altered subnetworks. *Bioinformatics*.  2018.
