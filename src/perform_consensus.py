@@ -49,7 +49,7 @@ def run(args):
 
     for network_label, score_label, index_gene_file, edge_list_file, component_file in zip(args.networks, args.scores, args.index_gene_files, args.edge_list_files, args.component_files):
         index_to_gene, gene_to_index = load_index_gene(index_gene_file)
-        edge_list = set(frozenset((index_to_gene[i], index_to_gene[j])) for i, j in load_edge_list(edge_list_file))
+        edge_list = set(frozenset(edge) for edge in load_edge_list(edge_list_file, index_to_gene, unweighted=True))
         components = load_components(component_file)
 
         index_to_gene_collection[(network_label, score_label)] = index_to_gene

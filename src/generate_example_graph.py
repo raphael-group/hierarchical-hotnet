@@ -8,12 +8,13 @@ from hhio import save_index_gene, save_edge_list, save_gene_score
 
 # Parse arguments.
 def get_parser():
-    description = 'Generate an example vertex-weighted graph.'
+    description = 'Generate example vertex-weighted graphs.'
     parser = argparse.ArgumentParser(description=description)
-    parser.add_argument('-igf', '--index_gene_file', type=str, required=True, help='Index-gene filename')
-    parser.add_argument('-elf', '--edge_list_file', type=str, required=True, help='Edge list filename')
-    parser.add_argument('-gsfa', '--gene_score_file_a', type=str, required=True, help='Gene-score filename')
-    parser.add_argument('-gsfb', '--gene_score_file_b', type=str, required=True, help='Gene-score filename')
+    parser.add_argument('-nf', '--network_file', type=str, required=False, help='Network filename')
+    parser.add_argument('-igf', '--index_gene_file', type=str, required=False, help='Index-gene filename')
+    parser.add_argument('-elf', '--edge_list_file', type=str, required=False, help='Edge list filename')
+    parser.add_argument('-gsfa', '--gene_score_file_a', type=str, required=False, help='Gene-score filename')
+    parser.add_argument('-gsfb', '--gene_score_file_b', type=str, required=False, help='Gene-score filename')
     parser.add_argument('-pf', '--plot_file', type=str, required=False, help='Plot filename')
     return parser
 
@@ -72,10 +73,17 @@ def run(args):
     gene_to_score_a = dict((gene, score) for gene, score in zip(node_list, score_list_a))
     gene_to_score_b = dict((gene, score) for gene, score in zip(node_list, score_list_b))
 
-    save_index_gene(args.index_gene_file, index_to_gene)
-    save_edge_list(args.edge_list_file, edge_list, gene_to_index)
-    save_gene_score(args.gene_score_file_a, gene_to_score_a)
-    save_gene_score(args.gene_score_file_b, gene_to_score_b)
+    if args.network_file:
+        with open(args.network_file, 'w') as f:
+            f.write('\n'.join('\t'.join(edge) for edge in edge_list))
+    if args.index_gene_file:
+        save_index_gene(args.index_gene_file, index_to_gene)
+    if args.edge_list_file:
+        save_edge_list(args.edge_list_file, edge_list, gene_to_index)
+    if args.gene_score_file_a:
+        save_gene_score(args.gene_score_file_a, gene_to_score_a)
+    if args.gene_score_file_b:
+        save_gene_score(args.gene_score_file_b, gene_to_score_b)
 
     # Draw the graph for illustration.
     if args.plot_file:

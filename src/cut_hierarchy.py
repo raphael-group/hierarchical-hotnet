@@ -6,7 +6,7 @@ import sys, argparse
 from collections import defaultdict
 
 from common import combined_similarity_matrix
-from hhio import load_index_gene, load_weighted_edge_list, progress
+from hhio import load_index_gene, load_edge_list, progress
 
 # Parse arguments.
 def get_parser():
@@ -99,7 +99,7 @@ def run(args):
     if args.verbose:
         progress('Loading data...')
 
-    T = load_weighted_edge_list(args.edge_list_file)
+    T = load_edge_list(args.edge_list_file)
     index_to_gene, gene_to_index = load_index_gene(args.index_gene_file)
 
     # Load data.

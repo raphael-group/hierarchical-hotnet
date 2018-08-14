@@ -1,6 +1,6 @@
 #!/usr/bin/python
 
-from common import convert_edge_list, convert_weighted_edge_list
+import math, numpy as np
 
 ####################################################################################################################################
 #
@@ -32,7 +32,7 @@ def save_index_gene(filename, index_to_gene):
     with open(filename, 'w') as f:
         f.write('\n'.join('{}\t{}'.format(index, gene) for index, gene in index_gene_list))
 
-def load_edge_list(filename, dictionary=None):
+def load_edge_list(filename, dictionary=None, unweighted=False):
     '''
     Load edge list.
     '''
@@ -41,12 +41,30 @@ def load_edge_list(filename, dictionary=None):
         for l in f:
             if not l.startswith('#'):
                 arrs = l.strip().split()
-                i = int(arrs[0])
-                j = int(arrs[1])
-                edge_list.append((i, j))
+
+                if len(arrs)==2:
+                    i = int(arrs[0])
+                    j = int(arrs[1])
+                    edge_list.append((i, j, 1))
+                elif len(arrs)==3:
+                    i = int(arrs[0])
+                    j = int(arrs[1])
+                    try:
+                        weight = float(arrs[2])
+                        if not math.isinf(weight) and not math.isnan(weight):
+                            edge_list.append((i, j, weight))
+                        else:
+                            raise Warning('{} is not a valid edge weight; edge omitted.'.format(arrs[2]))
+                    except ValueError:
+                        raise Warning('{} is not a valid edge weight; edge omitted.'.format(arrs[2]))
+                elif l.strip():
+                    raise Warning('{} is not a valid edge; edge omitted.'.format(l.strip()))
 
     if dictionary:
-        edge_list = convert_edge_list(edge_list, dictionary)
+        edge_list = [(dictionary[i], dictionary[j], weight) for i, j, weight in edge_list]
+
+    if unweighted:
+        edge_list = [(i, j) for i, j, weight in edge_list]
 
     return edge_list
 
@@ -55,10 +73,10 @@ def save_edge_list(filename, edge_list, dictionary=None):
     Save edge list.
     '''
     if dictionary:
-        edge_list = convert_edge_list(edge_list, dictionary)
+        edge_list = [(dictionary[edge[0]], dictionary[edge[1]]) + tuple(edge)[2:] for edge in edge_list]
 
     with open(filename, 'w') as f:
-        f.write('\n'.join('{}\t{}'.format(i, j) for i, j in edge_list))
+        f.write('\n'.join('\t'.join(map(str, edge)) for edge in edge_list))
 
 def load_gene_score(filename, score_threshold=0.0):
     '''
@@ -69,10 +87,20 @@ def load_gene_score(filename, score_threshold=0.0):
         for l in f:
             if not l.startswith('#'):
                 arrs = l.strip().split()
-                gene = arrs[0]
-                score = float(arrs[1])
-                if score>=score_threshold:
-                    gene_to_score[gene] = score
+                if len(arrs)==2:
+                    gene = arrs[0]
+                    try:
+                        score = float(arrs[1])
+                        if not math.isinf(score) and not math.isnan(score):
+                            if score>=score_threshold:
+                                gene_to_score[gene] = score
+                        else:
+                            raise Warning('{} is not a valid gene score; gene score omitted.'.format(arrs[1]))
+                    except ValueError:
+                        raise Warning('{} is not a valid gene score; gene score omitted.'.format(arrs[1]))
+                elif l.strip():
+                    raise Warning('{} is not a valid gene score; gene score omitted.'.format(l.strip()))
+
     return gene_to_score
 
 def save_gene_score(filename, gene_to_score):
@@ -93,7 +121,7 @@ def load_matrix(filename, matrix_name='PPR'):
     '''
     Load matrix.
     '''
-    import numpy as np, h5py
+    import h5py
 
     f = h5py.File(filename, 'r')
     if matrix_name in f:
@@ -107,48 +135,13 @@ def save_matrix(filename, A, matrix_name='PPR'):
     '''
     Save matrix.
     '''
-    import numpy as np, h5py
+    import h5py
 
     f = h5py.File(filename, 'a')
     if matrix_name in f:
         del f[matrix_name]
     f[matrix_name] = np.asarray(A, dtype=np.float32)
     f.close()
-
-####################################################################################################################################
-#
-# Hierarchy IO functions
-#
-####################################################################################################################################
-
-def load_weighted_edge_list(filename, dictionary=None):
-    '''
-    Load weighted edge list from a TSV file in (source, target, weight) format.
-    '''
-    edge_list = list()
-    with open(filename, 'r') as f:
-        for l in f:
-            if not l.startswith('#'):
-                arrs = l.rstrip('\n').split('\t')
-                source = int(arrs[0])
-                target = int(arrs[1])
-                weight = float(arrs[2])
-                edge_list.append((source, target, weight))
-
-    if dictionary:
-        edge_list = convert_weighted_edge_list(edge_list, dictionary)
-
-    return edge_list
-
-def save_weighted_edge_list(filename, edge_list, dictionary=None):
-    '''
-    Save weighted edge list as a TSV file in (source, target, weight) format.
-    '''
-    if dictionary:
-        edge_list = convert_weighted_edge_list(edge_list, dictionary)
-
-    with open(filename, 'w') as f:
-        f.write('\n'.join('\t'.join(map(str, edge)) for edge in edge_list))
 
 ####################################################################################################################################
 #

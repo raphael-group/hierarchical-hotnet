@@ -9,7 +9,7 @@ import sys, argparse
 
 from hierarchical_clustering import tarjan_HD, strongly_connected_components
 from common import combined_similarity_matrix
-from hhio import load_matrix, load_index_gene, load_gene_score, save_weighted_edge_list, save_index_gene
+from hhio import load_matrix, load_index_gene, load_gene_score, save_edge_list, save_index_gene
 
 # Parse arguments.
 def get_parser():
@@ -71,7 +71,7 @@ def run(args):
     if args.verbose:
         print('Saving results...')
 
-    save_weighted_edge_list(args.hierarchy_edge_list_file, T)
+    save_edge_list(args.hierarchy_edge_list_file, T)
     save_index_gene(args.hierarchy_index_gene_file, common_index_to_gene)
 
 if __name__=='__main__':

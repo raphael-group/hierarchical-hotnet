@@ -20,7 +20,7 @@ def get_parser():
 # Run script.
 def run(args):
     # Load unpermuted network.
-    edge_list = load_edge_list(args.edge_list_file)
+    edge_list = load_edge_list(args.edge_list_file, unweighted=True)
 
     # Permute network.
     G = nx.Graph()

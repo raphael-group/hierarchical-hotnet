@@ -13,7 +13,7 @@ plt.style.use('ggplot')
 
 from hierarchical_clustering import find_height_to_sizes
 from common import combined_similarity_matrix
-from hhio import load_index_gene, load_weighted_edge_list, progress
+from hhio import load_index_gene, load_edge_list, progress
 
 # Parse arguments.
 def get_parser():
@@ -38,7 +38,7 @@ def compute_heights(T, reverse=True):
     return sorted(set(height for source, target, height in T), reverse=reverse)
 
 def load_heights(edge_list_file, reverse=True):
-    T = load_weighted_edge_list(edge_list_file)
+    T = load_edge_list(edge_list_file)
     return compute_heights(T, reverse=reverse)
 
 def compute_statistics(T, index_to_gene, thresholds, reverse=True):
@@ -71,7 +71,7 @@ def compute_statistics(T, index_to_gene, thresholds, reverse=True):
     return statistics
 
 def load_statistics(edge_list_file, index_gene_file, thresholds, reverse=True):
-    T = load_weighted_edge_list(edge_list_file)
+    T = load_edge_list(edge_list_file)
     index_to_gene, gene_to_index = load_index_gene(index_gene_file)
     return compute_statistics(T, index_to_gene, thresholds, reverse)
 

@@ -21,7 +21,7 @@ def get_parser():
 def run(args):
     # Load data.
     index_to_gene, gene_to_index = load_index_gene(args.index_gene_file)
-    edge_list = load_edge_list(args.edge_list_file, index_to_gene)
+    edge_list = load_edge_list(args.edge_list_file, index_to_gene, unweighted=True)
     gene_to_score = load_gene_score(args.gene_score_file)
 
     # Find degrees of of network genes in subgraph induced by scored genes.
