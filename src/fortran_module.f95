@@ -47,8 +47,8 @@ subroutine condense_adjacency_matrix(B, A, V, k, m, n)
     ! A: weighted adjacency matrix
     ! B: condensed weighted adjacency matrix
 
-    do i=1,n
-        do j=1,n
+    do i=1, n
+        do j=1, n
             if (i /= j) then
                 B(i,j) = minimum_slice(V(k(i): k(i+1)-1), V(k(j): k(j+1)-1), k(i+1)-k(i), k(j+1)-k(j))
             else
@@ -360,3 +360,47 @@ recursive subroutine insertion_sort(x, n)
     end do
 
 end subroutine insertion_sort
+
+!
+! compute_expected_size
+!
+!   computed excepted size of cuts of hierarchy
+!
+
+subroutine summarize_sizes(summary_sizes, distinct_heights, heights, sizes, max_indices, m, n, o)
+
+    implicit none
+
+    integer, intent(in) :: m, n, o, max_indices(m)
+    double precision, intent(in) :: distinct_heights(n), heights(m, o), sizes(m, o)
+    double precision, intent(out) :: summary_sizes(n, 3)
+
+    integer :: i, j, cur_indices(m)
+    double precision :: cur_sizes(m)
+
+    ! m: number of hierarchies
+    ! n: number of distinct heights
+    ! o: maximum number of heights per hierarchy
+    ! heights: heights in hierarchies
+    ! sizes: sizes of cuts of hierarchies at heights
+    ! distinct_heights: distinct heights
+    ! expected_size: expected size of cuts of hierarchies at distinct heights
+    ! cur_indices: current index in heights and sizes for incrementing
+    ! max_indices: maximum index in heights and sizes for incrementing
+
+    cur_indices = 1
+    summary_sizes = 0.d0
+
+    do j=1, n
+        do i=1, m
+            do while (cur_indices(i)<max_indices(i) .and. heights(i, cur_indices(i)+1)>=distinct_heights(j))
+                cur_indices(i) = cur_indices(i) + 1
+            end do
+            cur_sizes(i) = sizes(i, cur_indices(i))
+        end do
+        summary_sizes(j, 1) = minval(cur_sizes)
+        summary_sizes(j, 2) = sum(cur_sizes)/float(m)
+        summary_sizes(j, 3) = maxval(cur_sizes)
+    end do
+
+end subroutine summarize_sizes

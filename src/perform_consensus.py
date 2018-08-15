@@ -17,8 +17,8 @@ def get_parser():
     parser.add_argument('-n', '--networks', type=str, required=True, nargs='*')
     parser.add_argument('-s', '--scores', type=str, required=True, nargs='*')
     parser.add_argument('-t', '--threshold', type=int, required=True)
-    parser.add_argument('-o', '--output_file', type=str, required=True)
-    parser.add_argument('-oo', '--other_output_file', type=str, required=True)
+    parser.add_argument('-cnf', '--consensus_node_file', type=str, required=False)
+    parser.add_argument('-cef', '--consensus_edge_file', type=str, required=False)
     parser.add_argument('-v', '--verbose', action='store_true')
     return parser
 
@@ -85,13 +85,15 @@ def run(args):
     if args.verbose:
         progress('Saving data...')
 
-    output_string = '\n'.join('\t'.join(x) for x in consensus_results)
-    with open(args.output_file, 'w') as f:
-        f.write(output_string)
+    if args.consensus_node_file is not None:
+        output_string = '\n'.join('\t'.join(x) for x in consensus_results)
+        with open(args.consensus_node_file, 'w') as f:
+            f.write(output_string)
 
-    output_string = '\n'.join('\t'.join(x) for x in sorted(map(sorted, thresholded_edges)))
-    with open(args.other_output_file, 'w') as f:
-        f.write(output_string)
+    if args.consensus_edge_file is not None:
+        output_string = '\n'.join('\t'.join(x) for x in sorted(map(sorted, thresholded_edges)))
+        with open(args.consensus_edge_file, 'w') as f:
+            f.write(output_string)
 
     if args.verbose:
         progress()

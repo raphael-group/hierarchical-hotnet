@@ -17,19 +17,19 @@ This software is either required for Hierarchical HotNet or optional but recomme
 
 ##### Required
 * Linux/Unix
-* [Python 2.7 or 3.5](http://python.org/)
-* [NumPy 1.14](http://www.numpy.org/)
-* [SciPy 0.19](http://www.scipy.org/)
-* [h5py 2.7](http://www.h5py.org/)
+* [Python (2.7 or 3.5)](http://python.org/)
+* [NumPy (1.14)](http://www.numpy.org/)
+* [SciPy (0.19)](http://www.scipy.org/)
+* [NetworkX (1.11)](http://networkx.github.io/)
+* [h5py (2.7)](http://www.h5py.org/)
 
 ##### Optional, but recommended
 * A Fortran compiler, e.g., [gfortran 5.4](https://gcc.gnu.org/wiki/GFortran)
-* [NetworkX 1.11](http://networkx.github.io/)
-* [Matplotlib 2.0](http://matplotlib.org/)
+* [Matplotlib (2.0)](http://matplotlib.org/)
 * [virtualenv](https://virtualenv.pypa.io/en/stable/)
 * [GNU parallel](https://www.gnu.org/software/parallel/)
 
-Most likely, Hierarchical HotNet will work with other versions of the above software.
+Most likely, Hierarchical HotNet will work with both previous and more recent versions of the above software.
 
 In particular, both [virtualenv](https://virtualenv.pypa.io/en/stable/) and [GNU parallel](https://www.gnu.org/software/parallel/) are recommended in practice.  Virtualenv provides a virtual environment that allows Python packages to be installed or updated independently of the system packages.  GNU parallel facilitates running many scripts in parallel.  We highly recommend running Hierarchical HotNet in parallel.
 
@@ -46,7 +46,7 @@ To test Hierarchical HotNet on an example network with two sets of example score
 
     sh examples/example_commands.sh
 
-This script illustrates the full Hierarchical HotNet pipeline.  It should require less than a minute or two of CPU time, 100 MB of RAM, and 2 MB of storage space.  If this script completes successfully, then Hierarchical HotNet is ready to run.
+This script illustrates the full Hierarchical HotNet pipeline.  It should require less than a minute or two of CPU time, 100 MB of RAM, and 1 MB of storage space.  If this script completes successfully, then Hierarchical HotNet is ready to run.
 
 Alternatively, to run Hierarchical HotNet in parallel on the sample example data, please run the following script:
 
@@ -81,15 +81,15 @@ This file associates each gene with a score:
 ### Running
 We provide a script, `hierarchical_hotnet.py`, for running the entire Hierarchical HotNet pipeline.  **This script will be added shortly.**  This script combines the following steps, which can also be run separately:
 
-1. Choose the restart parameter `beta` for each network by running `src/choose_beta.py` and create a similarity matrix for each network with the chosen `beta` value by running `src/create_similarity_matrix.py`.
+1. Choose the restart parameter `beta` for each network by running the `src/choose_beta.py` script and create a similarity matrix for each network with the chosen `beta` value by running the `src/create_similarity_matrix.py` script.
 
-2. Depending on your choice of null graph model, generate either permuted scores for each set of scores and network by running `src/permute_scores.py` or permuted networks for each network by running `src/permute_networks.py`.  In general, it is faster to generate permuted scores than permuted networks.
+2. Depending on your choice of null graph model, generate either permuted scores for each set of scores and network by running the `src/permute_scores.py` script or permuted networks for each network by running the `src/permute_networks.py` script.  In general, it is faster to generate permuted scores than permuted networks.
 
-3. Construct hierarchies on the observed network and gene scores as well as the permuted networks and gene scores by running `src/construct_hierarchies.py`.
+3. Construct hierarchies on the observed network and gene scores as well as the permuted networks and gene scores by running the `src/construct_hierarchies.py` script.
 
-4. Find cuts of the hierarchy by running `src/cut_hierarchy_file.py`.
+4. Find cuts of the hierarchy by running the `src/find_cluster_sizes.py`, `src/summarize_cluster_sizes.py`, `src/find_cut.py`, and `src/cut_hierarchy.py` scripts.
 
-5. Perform the consensus summarization procedure on the results by running `src/perform_consensus.py`.
+5. Evaluate the statistical significance of the results by running the `src/compute_p_value.py` script, and perform the consensus summarization procedure on the results by running the `src/perform_consensus.py` script.
 
 See `examples/example_commands.sh` or `examples/example_commands_parallel.sh` for full minimal working examples of Hierarchical HotNet that illustrate the use of each of these scripts, including the inputs and outputs for the Hierarchical HotNet pipeline.
 
