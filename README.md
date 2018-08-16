@@ -79,7 +79,7 @@ This file associates each gene with a score:
     DEF 0.2
 
 ### Running
-We provide a script, `hierarchical_hotnet.py`, for running the entire Hierarchical HotNet pipeline.  **This script will be added shortly.**  This script combines the following steps, which can also be run separately:
+We provide a script, `hierarchical_hotnet.py`, for running the entire Hierarchical HotNet pipeline.  **This script will be added shortly.**  This script combines the following steps, which can also be run separately (see `examples/example_commands.sh` and `examples/example_commands_parallel.sh` for examples):
 
 1. Choose the restart parameter `beta` for each network by running the `src/choose_beta.py` script and create a similarity matrix for each network with the chosen `beta` value by running the `src/create_similarity_matrix.py` script.
 
@@ -93,7 +93,7 @@ We provide a script, `hierarchical_hotnet.py`, for running the entire Hierarchic
 
 See `examples/example_commands.sh` or `examples/example_commands_parallel.sh` for full minimal working examples of Hierarchical HotNet that illustrate the use of each of these scripts, including the inputs and outputs for the Hierarchical HotNet pipeline.
 
-The `hierarchical_hotnet.py` script runs Hierarchical HotNet checks for intermediate results, which it will use if available.  **This script will be added shortly.**  For example, if the similarity matrices are already available, then the script can skip this step of Hierarchical HotNet.
+The `hierarchical_hotnet.py` script runs Hierarchical HotNet checks for intermediate results, which it will use if available.  For example, if the similarity matrices are already available, then the script can skip this step of Hierarchical HotNet.
 
 ### Output
 Hierarchical HotNet identifies statistically significant regions of a hierarchical clustering of topologically close, high-scoring genes.  Hierarchical HotNet also performs a consensus across hierarchical clusterings from different networks and gene scores.
@@ -105,7 +105,7 @@ Additional information
 See the `examples` directory for example data, scripts, and output for Hierarchical HotNet.
 
 ### Support
-For support with Hierarchical HotNet, please visit the [HotNet Google Group](https://groups.google.com/forum/#!forum/hotnet-users).  To aid troubleshooting, please first try the examples in the `examples` directory and provide any error messages for these examples.
+For support with Hierarchical HotNet, please visit the [HotNet Google Group](https://groups.google.com/forum/#!forum/hotnet-users).  Please try one of the examples in the `examples` directory before running Hierarchical HotNet with your own data, and please provide any error messages encountered with these examples to expedite troubleshooting.
 
 ### License
 See `LICENSE.txt` for license information.  **Add license.**

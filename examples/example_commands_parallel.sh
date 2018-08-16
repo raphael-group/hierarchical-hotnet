@@ -36,7 +36,7 @@ done
 
 for network in network_1
 do
-    for score in score_1 score_2
+    for score in scores_1 scores_2
     do
         mkdir -p $intermediate/"$network"_"$score"
     done
@@ -54,7 +54,7 @@ echo "Construct similarity matrices..."
 for network in network_1
 do
     python src/construct_similarity_matrix.py \
-        -i   $data/edge_list_"$network".tsv \
+        -i   $data/"$network"_edge_list.tsv \
         -o   $intermediate/"$network"/similarity_matrix.h5 \
         -bof $intermediate/"$network"/beta.txt
 done
@@ -71,24 +71,24 @@ echo "Permuting networks..."
 
 for network in network_1
 do
-    cp $data/index_gene_"$network".tsv $intermediate/"$network"/index_gene_"$network"_0.tsv
-    cp $data/edge_list_"$network".tsv $intermediate/"$network"/edge_list_"$network"_0.tsv
+    cp $data/"$network"_index_gene.tsv $intermediate/"$network"/index_gene_0.tsv
+    cp $data/"$network"_edge_list.tsv $intermediate/"$network"/edge_list_0.tsv
 
     # Preserve connectivity of the observed graph.
     parallel -u -j $num_cores --bar \
         python src/permute_network.py \
-            -i $intermediate/"$network"/edge_list_"$network"_0.tsv \
+            -i $intermediate/"$network"/edge_list_0.tsv \
             -s {} \
             -c \
-            -o $intermediate/"$network"/edge_list_"$network"_{}.tsv \
+            -o $intermediate/"$network"/edge_list_{}.tsv \
         ::: `seq 1 4`
 
     # Do not preserve connectivity of the observed graph.
     parallel -u -j $num_cores --bar \
         python src/permute_network.py \
-            -i $intermediate/"$network"/edge_list_"$network"_0.tsv \
+            -i $intermediate/"$network"/edge_list_0.tsv \
             -s {} \
-            -o $intermediate/"$network"/edge_list_"$network"_{}.tsv \
+            -o $intermediate/"$network"/edge_list_{}.tsv \
         ::: `seq 5 8`
 done
 
@@ -98,22 +98,22 @@ echo "Permuting scores..."
 
 for network in network_1
 do
-    for score in score_1 score_2
+    for score in scores_1 scores_2
     do
-        cp $data/scores_"$score".tsv $intermediate/"$network"_"$score"/scores_"$score"_0.tsv
+        cp $data/"$score".tsv $intermediate/"$network"_"$score"/scores_0.tsv
 
         python src/find_permutation_bins.py \
-            -gsf $intermediate/"$network"_"$score"/scores_"$score"_0.tsv \
-            -igf $data/index_gene_"$network".tsv \
-            -elf $data/edge_list_"$network".tsv \
+            -gsf $intermediate/"$network"_"$score"/scores_0.tsv \
+            -igf $data/"$network"_index_gene.tsv \
+            -elf $data/"$network"_edge_list.tsv \
             -ms  1000 \
             -o   $intermediate/"$network"_"$score"/score_bins.tsv
 
         parallel -u -j $num_cores --bar \
             python src/permute_scores.py \
-                -i  $intermediate/"$network"_"$score"/scores_"$score"_0.tsv \
+                -i  $intermediate/"$network"_"$score"/scores_0.tsv \
                 -bf $intermediate/"$network"_"$score"/score_bins.tsv \
-                -o  $intermediate/"$network"_"$score"/scores_"$score"_{}.tsv \
+                -o  $intermediate/"$network"_"$score"/scores_{}.tsv \
             ::: `seq $num_permutations`
     done
 done
@@ -129,13 +129,13 @@ echo "Constructing hierarchies..."
 
 for network in network_1
 do
-    for score in score_1 score_2
+    for score in scores_1 scores_2
     do
         parallel -u -j $num_cores --bar \
             python src/construct_hierarchy.py \
                 -smf  $intermediate/"$network"/similarity_matrix.h5 \
-                -igf  $data/index_gene_"$network".tsv \
-                -gsf  $intermediate/"$network"_"$score"/scores_"$score"_{}.tsv \
+                -igf  $data/"$network"_index_gene.tsv \
+                -gsf  $intermediate/"$network"_"$score"/scores_{}.tsv \
                 -helf $intermediate/"$network"_"$score"/hierarchy_edge_list_{}.tsv \
                 -higf $intermediate/"$network"_"$score"/hierarchy_index_gene_{}.tsv \
             ::: `seq 0 $num_permutations`
@@ -147,26 +147,26 @@ echo "Summarizing hierarchies..."
 
 for network in network_1
 do
-    for score in score_1 score_2
+    for score in scores_1 scores_2
     do
         parallel -u -j $num_cores --bar \
             python src/find_cluster_sizes.py \
                 -elf $intermediate/"$network"_"$score"/hierarchy_edge_list_{}.tsv \
                 -igf $intermediate/"$network"_"$score"/hierarchy_index_gene_{}.tsv \
-                -csf $intermediate/"$network"_"$score"/size_{}.txt \
+                -csf $intermediate/"$network"_"$score"/sizes_{}.txt \
             ::: `seq 0 $num_permutations`
     done
 done
 
 for network in network_1
 do
-    for score in score_1 score_2
+    for score in scores_1 scores_2
     do
         python src/summarize_cluster_sizes.py \
-            -i     $(for i in `seq $num_permutations`; do echo " $intermediate/"$network"_"$score"/size_"$i".txt "; done) \
-            -esf   $intermediate/"$network"_"$score"/size_expected.txt \
-            -minsf $intermediate/"$network"_"$score"/size_min.txt \
-            -maxsf $intermediate/"$network"_"$score"/size_max.txt
+            -i     $(for i in `seq $num_permutations`; do echo " $intermediate/"$network"_"$score"/sizes_"$i".txt "; done) \
+            -esf   $intermediate/"$network"_"$score"/sizes_expected.txt \
+            -minsf $intermediate/"$network"_"$score"/sizes_min.txt \
+            -maxsf $intermediate/"$network"_"$score"/sizes_max.txt
     done
 done
 
@@ -175,12 +175,12 @@ echo "Cutting hierarchies..."
 
 for network in network_1
 do
-    for score in score_1 score_2
+    for score in scores_1 scores_2
     do
         parallel -u -j $num_cores --bar \
             python src/find_cut.py \
-                -osf $intermediate/"$network"_"$score"/size_{}.txt \
-                -esf $intermediate/"$network"_"$score"/size_expected.txt \
+                -osf $intermediate/"$network"_"$score"/sizes_{}.txt \
+                -esf $intermediate/"$network"_"$score"/sizes_expected.txt \
                 -hf $intermediate/"$network"_"$score"/height_{}.txt \
                 -rf $intermediate/"$network"_"$score"/ratio_{}.txt \
             ::: `seq 0 $num_permutations`
@@ -198,17 +198,17 @@ echo "Plotting cluster sizes..."
 
 for network in network_1
 do
-    for score in score_1 score_2
+    for score in scores_1 scores_2
     do
 
         height=`cat $intermediate/"$network"_"$score"/height_0.txt`
 
         python src/plot_hierarchy_statistics.py \
-            -osf   $intermediate/"$network"_"$score"/size_0.txt \
-            -psf   $(for i in `seq $num_permutations`; do echo " $intermediate/"$network"_"$score"/size_"$i".txt "; done) \
-            -esf   $intermediate/"$network"_"$score"/size_expected.txt \
-            -minsf $intermediate/"$network"_"$score"/size_min.txt \
-            -maxsf $intermediate/"$network"_"$score"/size_max.txt \
+            -osf   $intermediate/"$network"_"$score"/sizes_0.txt \
+            -psf   $(for i in `seq $num_permutations`; do echo " $intermediate/"$network"_"$score"/sizes_"$i".txt "; done) \
+            -esf   $intermediate/"$network"_"$score"/sizes_expected.txt \
+            -minsf $intermediate/"$network"_"$score"/sizes_min.txt \
+            -maxsf $intermediate/"$network"_"$score"/sizes_max.txt \
             -ch    $height \
             -nc    $num_cores \
             -l     $network $score \
@@ -221,7 +221,7 @@ echo "Identifying clusters..."
 
 for network in network_1
 do
-    for score in score_1 score_2
+    for score in scores_1 scores_2
     do
         height=`cat $intermediate/"$network"_"$score"/height_0.txt`
 
@@ -239,7 +239,7 @@ echo "Evaluating statistical significance..."
 
 for network in network_1
 do
-    for score in score_1 score_2
+    for score in scores_1 scores_2
     do
         python src/compute_p_value.py \
             -osf $intermediate/"$network"_"$score"/ratio_0.txt \
@@ -252,11 +252,11 @@ done
 echo "Performing consensus..."
 
 python src/perform_consensus.py \
-    -cf  $results/clusters_network_1_score_1.tsv $results/clusters_network_1_score_2.tsv \
-    -igf $data/index_gene_network_1.tsv $data/index_gene_network_1.tsv \
-    -elf $data/edge_list_network_1.tsv $data/edge_list_network_1.tsv \
+    -cf  $results/clusters_network_1_scores_1.tsv $results/clusters_network_1_scores_2.tsv \
+    -igf $data/network_1_index_gene.tsv $data/network_1_index_gene.tsv \
+    -elf $data/network_1_edge_list.tsv $data/network_1_edge_list.tsv \
     -n   network_1 network_1 \
-    -s   score_1 score_2 \
+    -s   scores_1 scores_2 \
     -t   2 \
     -cnf $results/consensus_nodes.tsv \
     -cef $results/consensus_edges.tsv

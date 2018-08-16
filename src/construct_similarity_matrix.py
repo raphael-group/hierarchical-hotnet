@@ -52,10 +52,10 @@ def run(args):
             A[i-k, j-k] = A[j-k, i-k] = weight
 
     # Choose beta.
-    if 0<args.beta<1:
-        beta = args.beta
-    elif args.beta is None:
+    if args.beta is None:
         beta = balanced_beta(A, args.threshold, args.num_digits)
+    elif 0<args.beta<1:
+        beta = args.beta
     else:
         raise ValueError('{} invalid; beta must satisfy 0 < beta < 1.'.format(args.beta))
 
