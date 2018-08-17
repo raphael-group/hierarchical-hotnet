@@ -1,7 +1,7 @@
 #!/usr/bin/python
 
 # Load modules.
-import math, numpy as np
+import numpy as np
 import sys, argparse
 import multiprocessing as mp
 
@@ -87,7 +87,7 @@ def run(args):
     alpha = 0.2
 
     ### Plot sizes.
-    plt.figure(figsize=(5, 4))
+    plt.figure(figsize=(5, 5))
 
     plt.step(1.0/observed_heights, observed_sizes, where='post', c=observed_color, linewidth=2, zorder=5, label='Observed sizes')
     plt.step(1.0/expected_heights, expected_sizes, where='post', c=permuted_color, linewidth=2, zorder=4, label='Expected sizes')
@@ -100,7 +100,7 @@ def run(args):
 
     plt.step(1.0/min_heights, min_sizes, where='post', c=background_permuted_color, linewidth=1, linestyle='dotted', zorder=3, label='Permuted sizes (minimum)')
 
-    plt.step([], [], where='post', c=background_permuted_color, linewidth=1, zorder=1, label='Permuted sizes (all)')
+    plt.step([float('nan')], [float('nan')], where='post', c=background_permuted_color, linewidth=1, zorder=1, label='Permuted sizes (all)')
     for i, (permuted_heights, permuted_sizes) in enumerate(zip(permuted_heights_collection, permuted_sizes_collection)):
         plt.step(1.0/permuted_heights, permuted_sizes, where='post', c=background_permuted_color, linewidth=0.5, alpha=alpha, zorder=1)
 
@@ -122,7 +122,7 @@ def run(args):
     plt.setp(ax.spines.values(), color='#555555')
     plt.grid(color='#555555', linestyle='dotted', alpha=0.25)
 
-    legend = plt.legend(loc='upper center', bbox_to_anchor=(0.5, -0.175), ncol=2)
+    legend = plt.legend(loc='upper center', bbox_to_anchor=(0.5, -0.2), ncol=2)
     frame = legend.get_frame()
     frame.set_alpha(0.0)
     plt.tight_layout()

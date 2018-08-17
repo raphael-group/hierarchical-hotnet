@@ -1,7 +1,6 @@
 #!/usr/bin/python
 
 # Load modules.
-import math, numpy as np
 import sys, argparse
 
 # Parse arguments.

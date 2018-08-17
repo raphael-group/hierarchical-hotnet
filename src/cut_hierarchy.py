@@ -1,7 +1,6 @@
 #!/usr/bin/python
 
 # Load modules.
-import math, numpy as np, networkx as nx
 import sys, argparse
 from collections import defaultdict
 

@@ -1,6 +1,6 @@
 #!/usr/bin/python
 
-# Import modules.
+# Load modules.
 import warnings
 warnings.simplefilter(action='ignore', category=FutureWarning)
 

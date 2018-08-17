@@ -29,7 +29,7 @@ def tarjan_HD(A, reverse=True, verbose=False):
 
     # Initialize variables.
     n = np.shape(A)[0]
-    V = range(n)
+    V = list(range(n))
     T = list()
     i = 0
     root = n
@@ -178,7 +178,7 @@ def strongly_connected_components(A):
     index_to_component = defaultdict(list)
     for i, j in enumerate(indices):
         index_to_component[j].append(i)
-    return index_to_component.values()
+    return list(index_to_component.values())
 
 def strongly_connected_components_from_adjacency_matrix(A):
     m, n = np.shape(A)

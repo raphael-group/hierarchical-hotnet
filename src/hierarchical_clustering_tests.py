@@ -19,7 +19,7 @@ def naive_HD(A, reverse=False):
 
     # Collect nodes and edges.
     num_nodes = np.shape(A)[0]
-    nodes = range(num_nodes)
+    nodes = list(range(num_nodes))
     generator = ((i, j, A[i, j]) for i in nodes for j in nodes if i!=j and A[i, j]!=0)
     edges = sorted(generator, reverse=reverse, key=lambda edge: edge[2])
     num_edges = len(edges)
@@ -138,8 +138,8 @@ def random_adjacency_matrix(n,seed=np.random.randint(0,4294967295),sparsity=0.0,
         components = strongly_connected_components(A)
         m = len(components)
         if m>1:
-            for i in xrange(m):
-                for j in xrange(m):
+            for i in range(m):
+                for j in range(m):
                         if i!=j:
                             p = np.random.randint(len(components[i]))
                             q = np.random.randint(len(components[j]))

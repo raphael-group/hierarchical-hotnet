@@ -184,6 +184,7 @@ do
             python src/find_cut.py \
                 -osf $intermediate/"$network"_"$score"/sizes_"$i".txt \
                 -esf $intermediate/"$network"_"$score"/sizes_expected.txt \
+                -lsb 1 \
                 -hf $intermediate/"$network"_"$score"/height_"$i".txt \
                 -rf $intermediate/"$network"_"$score"/ratio_"$i".txt
         done

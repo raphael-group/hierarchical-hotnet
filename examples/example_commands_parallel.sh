@@ -181,6 +181,7 @@ do
             python src/find_cut.py \
                 -osf $intermediate/"$network"_"$score"/sizes_{}.txt \
                 -esf $intermediate/"$network"_"$score"/sizes_expected.txt \
+                -lsb 1 \
                 -hf $intermediate/"$network"_"$score"/height_{}.txt \
                 -rf $intermediate/"$network"_"$score"/ratio_{}.txt \
             ::: `seq 0 $num_permutations`
