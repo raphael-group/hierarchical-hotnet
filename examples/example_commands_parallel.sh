@@ -48,7 +48,6 @@ done
 #
 ################################################################################
 
-# Construct similarity matrices.
 echo "Construct similarity matrices..."
 
 for network in network_1
@@ -65,8 +64,8 @@ done
 #
 ################################################################################
 
-# Permute networks.  We do not use permuted networks in this example, but we
-# generate them here to test the network permutation scripts.
+# Permute networks.  This example does not use permuted networks, but these
+# commands show how to generate them.
 echo "Permuting networks..."
 
 for network in network_1
@@ -92,8 +91,6 @@ do
         ::: `seq 5 8`
 done
 
-# Permute scores.  The permuted scores only exchange scores between vertices in
-# the network.
 echo "Permuting scores..."
 
 for network in network_1
@@ -113,6 +110,7 @@ do
             python src/permute_scores.py \
                 -i  $intermediate/"$network"_"$score"/scores_0.tsv \
                 -bf $intermediate/"$network"_"$score"/score_bins.tsv \
+                -s  {} \
                 -o  $intermediate/"$network"_"$score"/scores_{}.tsv \
             ::: `seq $num_permutations`
     done
@@ -120,11 +118,10 @@ done
 
 ################################################################################
 #
-#   Construct, summarize, and cut hierarchies.
+#   Construct hierarchies.
 #
 ################################################################################
 
-# Construct hierarchies.
 echo "Constructing hierarchies..."
 
 for network in network_1
@@ -142,114 +139,39 @@ do
     done
 done
 
-# Summarize hierarchies.
-echo "Summarizing hierarchies..."
+################################################################################
+#
+#   Process hierarchies.
+#
+################################################################################
 
+echo "Processing hierarchies..."
+
+# This -lsb/--lower_size_bound of 1 for small toy example with 25 vertices.
+# Use larger value (default is 10) for larger graphs.
 for network in network_1
 do
     for score in scores_1 scores_2
     do
-        parallel -u -j $num_cores --bar \
-            python src/find_cluster_sizes.py \
-                -elf $intermediate/"$network"_"$score"/hierarchy_edge_list_{}.tsv \
-                -igf $intermediate/"$network"_"$score"/hierarchy_index_gene_{}.tsv \
-                -csf $intermediate/"$network"_"$score"/sizes_{}.txt \
-            ::: `seq 0 $num_permutations`
-    done
-done
-
-for network in network_1
-do
-    for score in scores_1 scores_2
-    do
-        python src/summarize_cluster_sizes.py \
-            -i     $(for i in `seq $num_permutations`; do echo " $intermediate/"$network"_"$score"/sizes_"$i".txt "; done) \
-            -esf   $intermediate/"$network"_"$score"/sizes_expected.txt \
-            -minsf $intermediate/"$network"_"$score"/sizes_min.txt \
-            -maxsf $intermediate/"$network"_"$score"/sizes_max.txt
-    done
-done
-
-# Cut hierarchies.
-echo "Cutting hierarchies..."
-
-for network in network_1
-do
-    for score in scores_1 scores_2
-    do
-        parallel -u -j $num_cores --bar \
-            python src/find_cut.py \
-                -osf $intermediate/"$network"_"$score"/sizes_{}.txt \
-                -esf $intermediate/"$network"_"$score"/sizes_expected.txt \
-                -lsb 1 \
-                -hf $intermediate/"$network"_"$score"/height_{}.txt \
-                -rf $intermediate/"$network"_"$score"/ratio_{}.txt \
-            ::: `seq 0 $num_permutations`
+        python src/process_hierarchies.py \
+            -oelf $intermediate/"$network"_"$score"/hierarchy_edge_list_0.tsv \
+            -oigf $intermediate/"$network"_"$score"/hierarchy_index_gene_0.tsv \
+            -pelf $(for i in `seq $num_permutations`; do echo " $intermediate/"$network"_"$score"/hierarchy_edge_list_"$i".tsv "; done) \
+            -pigf $(for i in `seq $num_permutations`; do echo " $intermediate/"$network"_"$score"/hierarchy_index_gene_"$i".tsv "; done) \
+            -lsb  1 \
+            -cf   $results/clusters_"$network"_"$score".tsv \
+            -pl   $network $score \
+            -pf   $results/sizes_"$network"_"$score".pdf \
+            -nc   $num_cores
     done
 done
 
 ################################################################################
 #
-#   Process results.
+#   Perform consensus.
 #
 ################################################################################
 
-# Plot cluster sizes.
-echo "Plotting cluster sizes..."
-
-for network in network_1
-do
-    for score in scores_1 scores_2
-    do
-
-        height=`cat $intermediate/"$network"_"$score"/height_0.txt`
-
-        python src/plot_hierarchy_statistics.py \
-            -osf   $intermediate/"$network"_"$score"/sizes_0.txt \
-            -psf   $(for i in `seq $num_permutations`; do echo " $intermediate/"$network"_"$score"/sizes_"$i".txt "; done) \
-            -esf   $intermediate/"$network"_"$score"/sizes_expected.txt \
-            -minsf $intermediate/"$network"_"$score"/sizes_min.txt \
-            -maxsf $intermediate/"$network"_"$score"/sizes_max.txt \
-            -ch    $height \
-            -nc    $num_cores \
-            -l     $network $score \
-            -o    $results/sizes_"$network"_"$score".pdf
-    done
-done
-
-# Identify clusters.
-echo "Identifying clusters..."
-
-for network in network_1
-do
-    for score in scores_1 scores_2
-    do
-        height=`cat $intermediate/"$network"_"$score"/height_0.txt`
-
-        python src/cut_hierarchy.py \
-            -elf $intermediate/"$network"_"$score"/hierarchy_edge_list_0.tsv \
-            -igf $intermediate/"$network"_"$score"/hierarchy_index_gene_0.tsv \
-            -cc  height \
-            -ct  $height \
-            -o   $results/clusters_"$network"_"$score".tsv
-    done
-done
-
-# Evaluate statistical significance.
-echo "Evaluating statistical significance..."
-
-for network in network_1
-do
-    for score in scores_1 scores_2
-    do
-        python src/compute_p_value.py \
-            -osf $intermediate/"$network"_"$score"/ratio_0.txt \
-            -psf $(for i in `seq $num_permutations`; do echo -n " $intermediate/"$network"_"$score"/ratio_"$i".txt "; done) \
-            -o   $results/p_value_"$network"_"$score".txt
-    done
-done
-
-# Perform consensus.
 echo "Performing consensus..."
 
 python src/perform_consensus.py \

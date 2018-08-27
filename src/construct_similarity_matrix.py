@@ -1,9 +1,6 @@
 #!/usr/bin/python
 
 # Load modules.
-import warnings
-warnings.simplefilter(action='ignore', category=FutureWarning)
-
 import numpy as np, scipy as sp, scipy.optimize
 import sys, argparse
 
