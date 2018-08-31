@@ -18,10 +18,18 @@ def load_index_gene(filename):
         for l in f:
             if not l.startswith('#'):
                 arrs = l.strip().split()
-                index = int(arrs[0])
-                gene = arrs[1]
-                index_to_gene[index] = gene
-                gene_to_index[gene] = index
+                if len(arrs)==2:
+                    try:
+                        index = int(arrs[0])
+                        gene = arrs[1]
+                        index_to_gene[index] = gene
+                        gene_to_index[gene] = index
+                    except ValueError:
+                        raise Warning('{} is not a valid index-gene association; omitted.'.format(l))
+                elif l.strip():
+                    raise Warning('{} is not a valid index-gene association; omitted.'.format(l))
+    if not index_to_gene:
+        raise Exception('No index-gene associations; check {}.'.format(filename))
     return index_to_gene, gene_to_index
 
 def save_index_gene(filename, index_to_gene):
@@ -61,10 +69,28 @@ def load_edge_list(filename, dictionary=None, unweighted=False):
                     raise Warning('{} is not a valid edge; edge omitted.'.format(l.strip()))
 
     if dictionary:
-        edge_list = [(dictionary[i], dictionary[j], weight) for i, j, weight in edge_list]
+        tmp_edge_list = list()
+        for i, j, weight in edge_list:
+            try:
+                u = dictionary[i]
+                v = dictionary[j]
+                tmp_edge_list.append((u, v, weight))
+            except KeyError:
+                try:
+                    u = dictionary[i]
+                except KeyError:
+                    raise Warning('Index {} does not have an index-gene association; edge {}-{} omitted.'.format(i, i, j))
+                try:
+                    v = dictionary[j]
+                except KeyError:
+                    raise Warning('Index {} does not have an index-gene association; edge {}-{} omitted.'.format(j, i, j))
+        edge_list = tmp_edge_list
 
     if unweighted:
         edge_list = [(i, j) for i, j, weight in edge_list]
+
+    if not edge_list:
+        raise Exception('Edge list has no edges; check {}.'.format(filename))
 
     return edge_list
 
@@ -100,7 +126,8 @@ def load_gene_score(filename, score_threshold=0.0):
                         raise Warning('{} is not a valid gene score; gene score omitted.'.format(arrs[1]))
                 elif l.strip():
                     raise Warning('{} is not a valid gene score; gene score omitted.'.format(l.strip()))
-
+    if not gene_to_score:
+        raise Exception('No gene scores associations; check {}.'.format(filename))
     return gene_to_score
 
 def save_gene_score(filename, gene_to_score):

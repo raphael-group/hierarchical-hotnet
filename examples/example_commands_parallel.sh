@@ -64,8 +64,8 @@ done
 #
 ################################################################################
 
-# Permute networks.  This example does not use permuted networks, but these
-# commands show how to generate them.
+# This example does not use permuted networks, but these commands show how to
+# generate them.
 echo "Permuting networks..."
 
 for network in network_1
@@ -147,8 +147,8 @@ done
 
 echo "Processing hierarchies..."
 
-# This -lsb/--lower_size_bound of 1 for small toy example with 25 vertices.
-# Use larger value (default is 10) for larger graphs.
+# This example uses -lsb/--lower_size_bound 1 because it is a small toy example
+# with 25 vertices.  Use larger value (default is 10) for larger graphs.
 for network in network_1
 do
     for score in scores_1 scores_2

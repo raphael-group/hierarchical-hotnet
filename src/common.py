@@ -81,6 +81,9 @@ def combined_similarity_matrix(P, gene_to_index, gene_to_score):
     common_genes = sorted(topology_genes & score_genes)
     common_indices = [gene_to_index[gene]-min_index for gene in common_genes]
 
+    if not common_genes:
+        raise Exception('No network genes with gene scores.')
+
     f = np.array([gene_to_score[gene] for gene in common_genes])
     S = P[np.ix_(common_indices, common_indices)]*f
     common_index_to_gene = dict((i+1, gene) for i, gene in enumerate(common_genes))
