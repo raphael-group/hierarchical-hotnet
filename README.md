@@ -106,9 +106,9 @@ See the `examples` directory for example data, scripts, and output for Hierarchi
 For support with Hierarchical HotNet, please visit the [HotNet Google Group](https://groups.google.com/forum/#!forum/hotnet-users).  Please try one of the examples in the `examples` directory before running Hierarchical HotNet with your own data, and please provide any error messages encountered with these examples to expedite troubleshooting.
 
 ### License
-See `LICENSE.txt` for license information.  **Add license.**
+See `LICENSE.txt` for license information.
 
 ### Citation
-If you use Hierarchical HotNet in your work, then please cite the following reference:
+If you use Hierarchical HotNet in your work, then please cite the following manuscript:
 
-> M.A. Reyna, M.D.M. Leiserson, B.J. Raphael. Hierarchical HotNet: identifying hierarchies of altered subnetworks. *ECCB/Bioinformatics*.  2018.
+> M.A. Reyna, M.D.M. Leiserson, B.J. Raphael. Hierarchical HotNet: identifying hierarchies of altered subnetworks. [_ECCB/Bioinformatics_ **34**(17):i972-980](https://academic.oup.com/bioinformatics/article/34/17/i972/5093236), 2018.
