@@ -1,6 +1,9 @@
 Hierarchical HotNet
 =======================
 
+[![Build Status](https://travis-ci.org/raphael-group/hierarchical-hotnet.svg?branch=master)](https://travis-ci.org/raphael-group/hierarchical-hotnet?branch=master)
+
+
 Hierarchical HotNet is an algorithm for finding hierarchies of altered subnetworks.  While originally developed for use with cancer mutation data on protein-protein interaction networks, Hierarchical HotNet supports any application in which scores may be associated with the nodes of a network, i.e., a vertex-weighted graph.
 
 Setup

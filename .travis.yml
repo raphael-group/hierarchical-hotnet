@@ -9,7 +9,11 @@ install:
     - sudo apt-get -y install r-base
     - pip install codecov
     - pip install -r requirements.txt
+    - pwd
+    - ls
     - cd src
+    - pwd
+    - ls
     - f2py -c fortran_module.f95 -m fortran_module > /dev/null
     - cd ..
 script:
