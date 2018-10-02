@@ -1,0 +1,4 @@
+scipy>=0.19
+numpy>=1.14
+networkx>=1.11
+h5py>=2.7
