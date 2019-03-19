@@ -87,7 +87,7 @@ Hierarchical HotNet has several steps:
 
 3. Construct hierarchies on observed and permuted data by running the `src/construct_hierarchies.py` script.
 
-4. Summarize the hierarchies by running the `src/summarize_hierarchies.py` script.
+4. Process the hierarchies by running the `src/process_hierarchies.py` script.
 
 5. Perform the consensus summarization procedure on the results by running the `src/perform_consensus.py` script.
 
