@@ -31,8 +31,10 @@ def difference(A, beta, threshold):
     return r-s
 
 def balanced_beta(A, threshold, digits):
-    import scipy as sp, scipy.optimize
-    return sp.optimize.ridder(lambda beta: difference(A, beta, threshold), a=0.1**digits, b=1.0-0.1**digits, xtol=0.1**(digits+1))
+    try:
+        return sp.optimize.ridder(lambda beta: difference(A, beta, threshold), a=0.1**digits, b=1.0-0.1**digits, xtol=0.1**(digits+1))
+    except:
+        return 0.5
 
 # Run script.
 def run(args):
