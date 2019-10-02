@@ -64,8 +64,8 @@ done
 #
 ################################################################################
 
-# This example does not use permuted networks, but these commands show how to
-# generate them.
+# This example uses permuted networks for statisical testing instead of
+# permuting scores.
 echo "Permuting networks..."
 
 for network in network_1
