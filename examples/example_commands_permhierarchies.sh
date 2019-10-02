@@ -1,19 +1,20 @@
 #!/usr/bin/env bash
 
-data=$PWD/data
+data=$PWD/examples/data
 intermediate=$PWD/intermediate
 results=$PWD/results
 
-num_permutations=100
+num_permutations=25
 
 # Hierarchical HotNet is parallelizable, but this script runs each Hierarchical
 # HotNet sequentially.  Please see the example_commands_parallel.sh script for a
 # parallelized example.
 
 # Compile Fortran module.
-cd ../src
+cd  src
 f2py -c fortran_module.f95 -m fortran_module > /dev/null
 cd ..
+
 
 ################################################################################
 #
@@ -39,6 +40,7 @@ do
     done
 done
 
+
 ################################################################################
 #
 #   Construct similarity matrices.
@@ -55,6 +57,7 @@ do
         -bof $intermediate/"$network"/beta.txt
 done
 
+
 ################################################################################
 #
 #   Permute data.
@@ -67,75 +70,48 @@ echo "Permuting networks..."
 
 for network in network_1
 do
-	echo "network: $network"
-	echo "Copying some files."
+	
     cp $data/"$network"_index_gene.tsv $intermediate/"$network"/index_gene_0.tsv
     cp $data/"$network"_edge_list.tsv $intermediate/"$network"/edge_list_0.tsv
+	
+	for score in scores_1 scores_2
+	do
+		cp $data/"$score".tsv $intermediate/"$network"_"$score"/scores_0.tsv
+	done
 
 
-	echo "Making permuted networks 1-4."
-    # Preserve connectivity of the observed graph.
-    for i in `seq 1 4`
-    do
+	echo "------------------------------------------"
+	echo "Beginning the permutations of the network $network."
+	for i in `seq 0 $num_permutations`
+	do	
+
+		# 1) permute the network (preserve connectivity of the observed graph)
         python src/permute_network.py \
             -i $intermediate/"$network"/edge_list_0.tsv \
             -s "$i" \
             -c \
             -o $intermediate/"$network"/edge_list_"$i".tsv
-    done
-
-	echo "Making permuted networks 5-8."
-    # Do not preserve connectivity of the observed graph.
-    for i in `seq 5 8`
-    do
-        python src/permute_network.py \
-            -i $intermediate/"$network"/edge_list_0.tsv \
-            -s "$i" \
-            -o $intermediate/"$network"/edge_list_"$i".tsv
-    done
-	
-	echo "Begining similarity matrix creation of permutations."
-	for i in `seq 0 $num_permutations`
-	do	
+		
+		# 2) construct the similarity matrix of the permuted network
 		python src/construct_similarity_matrix.py \
-		        -i   $intermediate/"$network"/edge_list_"$i".tsv \
-		        -bof $intermediate/"$network"/perm_beta_file_"$i".txt \
-		        -o   $intermediate/"$network"/similarity_matrix_"$i".h5
-
+			-i   $intermediate/"$network"/edge_list_"$i".tsv \
+			-bof $intermediate/"$network"/perm_beta_file_"$i".txt \
+			-o   $intermediate/"$network"/similarity_matrix_"$i".h5
+		
+		# 3) for each score, construct the hierarchy of the permuted network
+		for score in scores_1 scores_2
+		do
 		    python src/construct_hierarchy.py \
 		        -smf  $intermediate/"$network"/similarity_matrix_"$i".h5 \
 		        -igf  $data/"$network"_index_gene.tsv \
-		        -gsf  $intermediate/"$network"_"$score"/scores.tsv \
+		        -gsf  $intermediate/"$network"_"$score"/scores_0.tsv \
 		        -helf $intermediate/"$network"_"$score"/hierarchy_edge_list_"$i".tsv \
 		        -higf $intermediate/"$network"_"$score"/hierarchy_index_gene_"$i".tsv
+		done
+		
 	done
 done
 
-
-
-################################################################################
-#
-#   Construct hierarchies.
-#
-################################################################################
-
-echo "Constructing hierarchies..."
-
-for network in network_1
-do
-    for score in scores_1 scores_2
-    do
-        for i in `seq 0 $num_permutations`
-        do
-            python src/construct_hierarchy.py \
-                -smf  $intermediate/"$network"/similarity_matrix.h5 \
-                -igf  $data/"$network"_index_gene.tsv \
-                -gsf  $intermediate/"$network"_"$score"/scores_"$i".tsv \
-                -helf $intermediate/"$network"_"$score"/hierarchy_edge_list_"$i".tsv \
-                -higf $intermediate/"$network"_"$score"/hierarchy_index_gene_"$i".tsv
-        done
-    done
-done
 
 ################################################################################
 #
@@ -162,6 +138,7 @@ do
             -pf   $results/sizes_"$network"_"$score".pdf
     done
 done
+
 
 ################################################################################
 #
